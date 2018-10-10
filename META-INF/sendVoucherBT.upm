@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<module>
+	<public>
+		<component name="sendVoucherBT">
+			<interface>nc.itf.gl.ISendVoucher2</interface>
+			<implementation>nc.impl.gl.SendVoucherImpl2</implementation>
+			<extension class="nc.uap.ws.deploy.OxbWSExtensionProcessor">
+				<wsdl>/nc/itf/gl/ISendVoucher2.wsdl</wsdl>
+				<address>/sendVoucherBT</address>
+			</extension>
+		</component>
+	</public>
+	<private>
+	</private>
+</module>
