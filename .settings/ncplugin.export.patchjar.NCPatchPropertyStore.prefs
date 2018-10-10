@@ -1,0 +1,8 @@
+NCPatchPropertyStore.SOURCE_DEST_LOCATION_KEY///Proj_wz/pubapp/src/client=modules/pubapp/client/classes/
+NCPatchPropertyStore.SOURCE_DEST_LOCATION_KEY///Proj_wz/uap/src/client=modules/uap/client/classes/
+NCPatchPropertyStore.SOURCE_DEST_LOCATION_KEY///Proj_wz/uap/src/public=modules/uap/classes/
+NCPatchPropertyStore.SOURCE_DEST_LOCATION_KEY///Proj_wz/zl/resources=resources/
+NCPatchPropertyStore.SOURCE_DEST_LOCATION_KEY///Proj_wz/zl/src/client=modules/zl/client/classes/
+NCPatchPropertyStore.SOURCE_DEST_LOCATION_KEY///Proj_wz/zl/src/private=modules/zl/META-INF/classes/
+NCPatchPropertyStore.SOURCE_DEST_LOCATION_KEY///Proj_wz/zl/src/public=modules/zl/classes/
+eclipse.preferences.version=1

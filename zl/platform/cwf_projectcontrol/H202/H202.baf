@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="gbk"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean id="billactionTotal" class="nc.pubapp.pade.platform.vo.BillactionTotal"><property name="actionList">
+<list></list>
+</property>
+<property name="billtypecode" value="H202"/>
+<property name="pk_billtypeid" value="0001ZZ1000000001M99W"/>
+</bean>
+
+</beans>

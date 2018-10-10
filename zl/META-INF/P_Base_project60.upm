@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding='gb2312'?>
+<module name="zl">
+  <public>
+	<component remote="true" singleton="true"  tx="CMT">
+	  <interface>nc.itf.zl.IBase_projectMaintain</interface>
+	  <implementation>nc.impl.zl.Base_projectMaintainImpl</implementation>
+	</component>
+
+  </public> 
+</module> 

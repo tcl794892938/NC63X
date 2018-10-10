@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding='gb2312'?>
+<module name="zl">
+  <public>
+	<component remote="true" singleton="true"  tx="CMT">
+	  <interface>nc.itf.zl.ICwf_carconeditMaintain</interface>
+	  <implementation>nc.impl.zl.Cwf_carconeditMaintainImpl</implementation>
+	</component>
+
+  </public> 
+</module> 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Manifest>
+  <BusinessComponet name="zl" dispname="租赁">
+    <public>
+      <src name="src/public"/>
+    </public>
+    <client>
+      <src name="src/client"/>
+    </client>
+    <private>
+      <src name="src/private"/>
+    </private>
+    <test>
+      <src name="src/test"/>
+    </test>
+    <resource>
+      <src name="resources"/>
+    </resource>
+    <funnodes>
+      <funnode name="收费大类" code="ZLH110" funnode="zl/ace/client/ZLH110.fnf" service="zl/ace/service/ZLH110.smf"/>
+      <funnode name="收费项目" code="ZLH120" funnode="zl/ace/client/ZLH120.fnf" service="zl/ace/service/ZLH120.smf"/>
+      <funnode name="用户项目权限控制" code="ZLH202" funnode="zl/ace/client/ZLH202.fnf" service="zl/ace/service/ZLH202.smf"/>
+      <funnode name="业务员权限控制" code="ZLH310" funnode="zl/ace/client/ZLH310.fnf" service="zl/ace/service/ZLH310.smf"/>
+      <funnode name="客户信息中心" code="ZLH340" funnode="zl/ace/client/ZLH340.fnf" service="zl/ace/service/ZLH340.smf"/>
+      <funnode name="合同管理" code="ZLH420" funnode="zl/ace/client/ZLH420.fnf" service="zl/ace/service/ZLH420.smf"/>
+      <funnode name="合同修订" code="ZLH430" funnode="zl/ace/client/ZLH430.fnf" service="zl/ace/service/ZLH430.smf"/>
+    </funnodes>
+  </BusinessComponet>
+</Manifest>

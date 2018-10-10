@@ -1,0 +1,13 @@
+DELETE FROM bd_billtype2 WHERE pk_billtypeid = '0001ZZ1000000001O07A';
+DELETE FROM bd_fwdbilltype WHERE pk_billtypeid = '0001ZZ1000000001O07A';
+DELETE FROM pub_function WHERE pk_billtype = 'H340';
+DELETE FROM pub_billaction WHERE pk_billtypeid = '0001ZZ1000000001O07A';
+DELETE FROM pub_billactiongroup WHERE pk_billtype = 'H340';
+DELETE FROM bd_billtype WHERE pk_billtypeid = '0001ZZ1000000001O07A';
+delete from temppkts;
+DELETE FROM sm_rule_type WHERE pk_rule_type = null;
+DELETE FROM sm_permission_res WHERE pk_permission_res = null;
+DELETE FROM pub_billaction WHERE pk_billaction = '0001ZZ1000000001O07B';
+DELETE FROM pub_billaction WHERE pk_billaction = '0001ZZ1000000001O07C';
+DELETE FROM pub_busiclass WHERE pk_busiclass = '0001ZZ1000000001O07D';
+DELETE FROM pub_busiclass WHERE pk_busiclass = '0001ZZ1000000001O07E';

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="gbk"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="general" class="nc.pubapp.pade.code.funnode.FunNodePara">
+    	<property name="moduleName" value="zl" />
+	    <property name="bpfPath" value="test.bpf"/>
+	    <property name="funcode" value="ZLH120"/>
+	    <property name="clientPackName" value="nc.ui.zl.costproject"/>
+	    <property name="metaData" value="zl\METADATA\zl\costproject.bmf"/>
+	    <property name="xmlPath" value="zl\src\client\nc\ui\zl\costproject\ace\view\Costproject_config.xml"/>
+		<property name="metaDataType" value="singleTreeCardType" />
+		<property name="treeType" value="PKTree" />
+	    <property name="funcregispath" value="zl/funcmodel/costproject/funcregis/ZLH120.func" />
+	    <property name="quetempath" value="${quetempath}" />
+	    <property name="printtempath" value="${printtempath}" />
+	    <property name="systembasepath" value="zl/systemplatebase/costproject/ZLH120/ZLH120.stb" />
+	    <property name="codeRule" value="2/2/2"/>
+	    <property name="extendSuffix" value=""/>
+	    <property name="uif2ModelFilePath" value="zl\ace\uif2model\ZLH120.umf"/>
+	    <property name="busiCompName" value="zl"/>
+	    <property name="metaDataId" value="0b71fa25-65e4-4d59-81f4-42bd170e7dd1"/>
+</bean>
+
+	<bean id="templet" class="nc.pubapp.pade.code.funnode.Templet">
+	    <property name="tempStyle" value="0" />
+	    <property name="nodeKey" value="" />
+	    <property name="templetPath" value="zl/templet/costproject/billtemplet/ZLH120.btf" />
+	</bean>
+
+	<bean id="SerPropara" class="nc.pubapp.pade.code.funnode.ServiceProxyPara">
+					<property name="delete">
+				<bean class="nc.pubapp.pade.code.funnode.ServiceProxyItemPara">
+					<property name="fullClassName" value="nc.itf.zl.ICostprojectMaintain" />
+					<property name="itmClassName" value=".ICostprojectMaintain" />
+					<property name="methodName" value="delete" />
+				</bean>
+			</property>
+							<property name="insert">
+				<bean class="nc.pubapp.pade.code.funnode.ServiceProxyItemPara">
+					<property name="fullClassName" value="nc.itf.zl.ICostprojectMaintain" />
+					<property name="itmClassName" value=".ICostprojectMaintain" />
+					<property name="methodName" value="insert" />
+				</bean>
+			</property>
+							<property name="update">
+				<bean class="nc.pubapp.pade.code.funnode.ServiceProxyItemPara">
+					<property name="fullClassName" value="nc.itf.zl.ICostprojectMaintain" />
+					<property name="itmClassName" value=".ICostprojectMaintain" />
+					<property name="methodName" value="update" />
+				</bean>
+			</property>
+							<property name="queryByQueryScheme">
+				<bean class="nc.pubapp.pade.code.funnode.ServiceProxyItemPara">
+					<property name="fullClassName" value="nc.itf.zl.ICostprojectMaintain" />
+					<property name="itmClassName" value=".ICostprojectMaintain" />
+					<property name="methodName" value="query" />
+				</bean>
+			</property>
+							</bean>
+	
+	<bean id="FilePackNameBean" class="nc.pubapp.pade.code.engine.FilePackNamePara">
+		<property name="filePackNameList">
+	    	<list>
+		       <value>nc.ui.zl.costproject.ace.handler.AceAddHandler.java</value>
+		       <value>nc.ui.zl.costproject.ace.maintain.AceCostprojectDataManager.java</value>
+		       <value>nc.ui.zl.costproject.ace.maintain.AceCostprojectService.java</value>
+		    </list>
+	    </property>
+	</bean>
+
+</beans>

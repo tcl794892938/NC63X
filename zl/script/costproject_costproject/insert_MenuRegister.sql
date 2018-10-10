@@ -1,0 +1,1 @@
+INSERT INTO sm_menuitemreg (ts, iconpath, pk_menu, menuitemname, resid, ismenutype, pk_menuitem, menudes, funcode, menuitemcode, dr ) VALUES ('2017-12-22 15:04:11', null, '1001A91000000001W9LX', '收费项目', 'DZLH120', 'N', '0001ZZ1000000001KK9U', null, 'ZLH120', 'ZLH120', 0 );

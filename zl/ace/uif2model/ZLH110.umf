@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<uif2designmodel>
+    <uif2elementHModel>
+        <uif2element className="" elementType="TEMPLATE_ELEMENT" id="4444953805887305778" isLeaf="true" nodeKey="bt" pid="BILL_TYPE_ID" pk_resourceinfo="" showName="ZLH110" templateId="zl/templet/tcl_costtype/billtemplet/ZLH110.btf" type="BILL_TYPE_ID">
+        </uif2element>
+        <uif2element className="nc.ui.pubapp.uif2app.model.HierachicalDataAppModel" elementType="MODEL" id="9163693218501955691" isLeaf="true" pid="MODEL" refMetaEntityID="5a7d9e80-eac7-462f-a56d-591ab9b1f5e0" showName="PUBAPP层次模型(HierachicalDataAppModel)实例对象" type="nc.ui.pubapp.uif2app.model.HierachicalDataAppModel">
+            <model>
+                <busiObjAdaptFactory mode="MD">
+                </busiObjAdaptFactory>
+                <treeCreateStrategy class="nc.vo.bd.meta.BDObjectTreeCreateStrategy" className="" rootName="">
+                    <hierarchicalData class="nc.vo.bd.meta.DefaultHierachicalData" codeRule="" codeTree="${codeTree}">
+                    </hierarchicalData>
+                </treeCreateStrategy>
+            </model>
+            <relatedElementMap>
+            </relatedElementMap>
+        </uif2element>
+        <uif2element className="nc.ui.uif2.components.TreePanel" elementType="VIEW" id="-6785541161913790916" isLeaf="true" pid="VIEW" showName="树控件(TreePanel)实例对象" type="nc.ui.uif2.components.TreePanel">
+            <panel rootvisibleflag="Y">
+            </panel>
+            <relatedElementMap>
+                <relatedElement elementId="9163693218501955691" key="dependDataModel">
+                </relatedElement>
+            </relatedElementMap>
+        </uif2element>
+        <uif2element className="nc.ui.pubapp.uif2app.view.ShowUpableBillForm" elementType="VIEW" id="1545105154087900503" isLeaf="true" pid="VIEW" showName="PUBAPP表单控件(BillForm)实例对象" type="nc.ui.pubapp.uif2app.view.ShowUpableBillForm">
+            <panel autoExecLoadFormula="Y" nodekey="bt" showTotalLine="Y">
+            </panel>
+            <relatedElementMap>
+                <relatedElement elementId="4444953805887305778" key="refTemplate">
+                </relatedElement>
+                <relatedElement elementId="9163693218501955691" key="dependDataModel">
+                </relatedElement>
+            </relatedElementMap>
+        </uif2element>
+        <uif2element className="nc.ui.pubapp.uif2app.view.OrgPanel" elementType="VIEW" id="859094416343603288" isLeaf="true" pid="VIEW" showName="组织面板控件实例对象" type="nc.ui.pubapp.uif2app.view.OrgPanel">
+            <panel>
+            </panel>
+            <relatedElementMap>
+                <relatedElement elementId="9163693218501955691" key="dependDataModel">
+                </relatedElement>
+            </relatedElementMap>
+        </uif2element>
+        <uif2element className="" dependModel="9163693218501955691" elementType="ACTION" id="1647445635592192112" isDependModelStatus="true" isLeaf="false" isTopAction="true" name="newActions" pid="ACTION" showName="newActions 节点级按钮容器" type="">
+            <actions>
+                <uif2element className="nc.ui.pubapp.uif2app.actions.AddAction" elementType="ACTION" id="-4497013142338401651" isLeaf="true" pid="6695486788675703514" showName="新增" type="nc.ui.pubapp.uif2app.actions.AddAction">
+                    <ncaction Code="Add" LongDescription="" Name="新增" ShortDescription="新增(Ctrl+N)">
+                        <accelerator keyCode="78" modifiers="130">
+                        </accelerator>
+                    </ncaction>
+                    <relatedElementMap>
+                        <relatedElement elementId="9163693218501955691" key="refModelId">
+                        </relatedElement>
+                    </relatedElementMap>
+                </uif2element>
+                <uif2element className="nc.ui.pubapp.uif2app.actions.EditAction" elementType="ACTION" id="-455412741706314926" isLeaf="true" pid="6695486788675703514" showName="修改" type="nc.ui.pubapp.uif2app.actions.EditAction">
+                    <ncaction Code="Edit" LongDescription="" Name="修改" ShortDescription="修改(Ctrl+E)">
+                        <accelerator keyCode="69" modifiers="130">
+                        </accelerator>
+                    </ncaction>
+                    <relatedElementMap>
+                        <relatedElement elementId="9163693218501955691" key="refModelId">
+                        </relatedElement>
+                    </relatedElementMap>
+                </uif2element>
+                <uif2element className="nc.ui.pubapp.uif2app.actions.DeleteAction" elementType="ACTION" id="-3542826475787835257" isLeaf="true" pid="6695486788675703514" showName="删除" type="nc.ui.pubapp.uif2app.actions.DeleteAction">
+                    <ncaction Code="Delete" LongDescription="" Name="删除" ShortDescription="删除(Ctrl+Shift+Del)">
+                        <accelerator keyCode="127" modifiers="195">
+                        </accelerator>
+                    </ncaction>
+                    <relatedElementMap>
+                        <relatedElement elementId="9163693218501955691" key="refModelId">
+                        </relatedElement>
+                    </relatedElementMap>
+                </uif2element>
+                <uif2element className="nc.ui.pubapp.uif2app.actions.RefreshAction" elementType="ACTION" id="-5511871372387486392" isLeaf="true" pid="6695486788675703514" showName="刷新" type="nc.ui.pubapp.uif2app.actions.RefreshAction">
+                    <ncaction Code="Refresh" LongDescription="" Name="刷新" ShortDescription="刷新(F5)">
+                        <accelerator keyCode="116" modifiers="0">
+                        </accelerator>
+                    </ncaction>
+                    <relatedElementMap>
+                        <relatedElement elementId="9163693218501955691" key="refModelId">
+                        </relatedElement>
+                    </relatedElementMap>
+                </uif2element>
+            </actions>
+            <editActions>
+                <uif2element className="nc.ui.pubapp.uif2app.actions.SaveAction" elementType="ACTION" id="-4372403094944562686" isLeaf="true" pid="-9035647940028068738" showName="保存" type="nc.ui.pubapp.uif2app.actions.SaveAction">
+                    <ncaction Code="Save" LongDescription="" Name="保存" ShortDescription="保存(Ctrl+S)">
+                        <accelerator keyCode="83" modifiers="130">
+                        </accelerator>
+                    </ncaction>
+                    <relatedElementMap>
+                        <relatedElement elementId="1545105154087900503" key="refViewId">
+                        </relatedElement>
+                        <relatedElement elementId="9163693218501955691" key="refModelId">
+                        </relatedElement>
+                    </relatedElementMap>
+                </uif2element>
+                <uif2element className="nc.ui.pubapp.uif2app.actions.CancelAction" elementType="ACTION" id="8399080886666636563" isLeaf="true" pid="-9035647940028068738" showName="取消" type="nc.ui.pubapp.uif2app.actions.CancelAction">
+                    <ncaction Code="Cancel" LongDescription="" Name="取消" ShortDescription="取消(Ctrl+Q)">
+                        <accelerator keyCode="81" modifiers="130">
+                        </accelerator>
+                    </ncaction>
+                    <relatedElementMap>
+                        <relatedElement elementId="1545105154087900503" key="refViewId">
+                        </relatedElement>
+                        <relatedElement elementId="9163693218501955691" key="refModelId">
+                        </relatedElement>
+                    </relatedElementMap>
+                </uif2element>
+            </editActions>
+        </uif2element>
+    </uif2elementHModel>
+    <actionModel>
+        <topActions topActions="1647445635592192112">
+        </topActions>
+        <shoulderActions>
+        </shoulderActions>
+        <tabActions>
+        </tabActions>
+    </actionModel>
+    <uif2modeldriven useModelIdList="">
+        <uif2element className="" elementType="" id="MODEL_DATAMANAGER" isLeaf="false" pid="" showName="ModelDataManager" type="MODEL_DATAMANAGER">
+        </uif2element>
+        <cellList>
+            <mxCell height="80.0" id="MODEL_DATAMANAGER" style="imageAlign=center;imageVerticalAlign=top;align=center;verticalAlign=bottom;image=/images/uapde/outlook_generatevo.gif;shape=SHAPE_UIF2LABEL;imageWidth=50;imageHeight=50" type="nc.ui.uapde.uif2assemble.modeldrivendesignmx.UIF2ModelDataMrgMxCell" width="100.0" x="50.0" y="80.0">
+            </mxCell>
+        </cellList>
+        <edgeList>
+        </edgeList>
+        <dmDrivenMap>
+        </dmDrivenMap>
+        <m2mListenMap>
+        </m2mListenMap>
+    </uif2modeldriven>
+    <tangramLayoutDataRoot>
+        <HSDataNode className="" dividerLocation="151.0" elementType="SPLIT_ELEMENT" id="487777563516180742" isLeaf="true" name="" pid="SPLIT_ELEMENT" showMode="SplitPane" showName="纵向分割控件" type="nc.ui.uif2.tangramlayout.node.HSNode">
+            <left>
+                <CDataNode className="" elementType="SPLIT_ELEMENT" id="4064099892758321770" isLeaf="false" name="" pid="" refActionIds="" refViewNodeId="-6785541161913790916" showName="" type="nc.ui.uif2.tangramlayout.node.CNode">
+                </CDataNode>
+            </left>
+            <right>
+                <VSDataNode className="" dividerLocation="75.0" elementType="SPLIT_ELEMENT" id="4395432351099571000" isLeaf="true" name="" pid="SPLIT_ELEMENT" showMode="SplitPane" showName="横向分割控件" type="nc.ui.uif2.tangramlayout.node.VSNode">
+                    <up>
+                        <CDataNode className="" elementType="SPLIT_ELEMENT" id="-6526049476481142157" isLeaf="false" name="" pid="" refActionIds="" refViewNodeId="859094416343603288" showName="" type="nc.ui.uif2.tangramlayout.node.CNode">
+                        </CDataNode>
+                    </up>
+                    <down>
+                        <CDataNode className="" elementType="SPLIT_ELEMENT" id="6713776450148230808" isLeaf="false" name="" pid="" refActionIds="" refViewNodeId="1545105154087900503" showName="" type="nc.ui.uif2.tangramlayout.node.CNode">
+                        </CDataNode>
+                    </down>
+                </VSDataNode>
+            </right>
+        </HSDataNode>
+    </tangramLayoutDataRoot>
+</uif2designmodel>

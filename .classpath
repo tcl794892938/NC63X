@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="out/pubapp" path="pubapp/src/client"/>
+	<classpathentry kind="src" output="out/uap" path="uap/src/public"/>
+	<classpathentry kind="src" output="out/uap" path="uap/src/client"/>
+	<classpathentry kind="src" output="out/fip" path="fip/src/client"/>
+	<classpathentry kind="src" output="out/fip" path="fip/src/public"/>
+	<classpathentry kind="src" output="out/fip" path="fip/src/test"/>
+	<classpathentry kind="src" output="out/zl" path="zl/src/public"/>
+	<classpathentry kind="src" output="out/zl" path="zl/src/client"/>
+	<classpathentry kind="src" output="out/zl" path="zl/src/private"/>
+	<classpathentry kind="src" output="out/zl" path="zl/src/test"/>
+	<classpathentry kind="src" path="zl/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="com.yonyou.studio.ria.core.library.container/Ant_Library"/>
+	<classpathentry kind="con" path="com.yonyou.studio.ria.core.library.container/Product_Common_Library"/>
+	<classpathentry kind="con" path="com.yonyou.studio.ria.core.library.container/Middleware_Library"/>
+	<classpathentry kind="con" path="com.yonyou.studio.ria.core.library.container/Framework_Library"/>
+	<classpathentry kind="con" path="com.yonyou.studio.ria.core.library.container/Module_Public_Library"/>
+	<classpathentry kind="con" path="com.yonyou.studio.ria.core.library.container/Module_Client_Library"/>
+	<classpathentry kind="con" path="com.yonyou.studio.ria.core.library.container/Module_Private_Library"/>
+	<classpathentry kind="con" path="com.yonyou.studio.ria.core.library.container/Module_Lang_Library"/>
+	<classpathentry kind="con" path="com.yonyou.studio.ria.core.library.container/Generated_EJB"/>
+	<classpathentry kind="con" path="org.testng.TESTNG_CONTAINER"/>
+	<classpathentry kind="con" path="com.yonyou.UAPUnit_CONTAINER"/>
+	<classpathentry kind="output" path="out/bin"/>
+</classpath>

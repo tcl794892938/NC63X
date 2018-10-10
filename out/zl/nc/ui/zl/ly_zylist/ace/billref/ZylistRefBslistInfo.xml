@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- 转单参照单据信息 -->
+	<bean id="refInfo" class="nc.ui.pubapp.billref.src.RefInfo">
+		<property name="headVO">
+			<bean class="nc.vo.zl.ly_bslist.BslistVO">	</bean>
+		</property>
+		 <!--  <property name="bodyVO">
+			<bean class="nc.vo.zl.ly_bslist.BslistVO">	</bean>
+		</property>-->
+		
+		<property name="billVO">
+			<bean class="nc.vo.zl.ly_bslist.AggBslistVO">  </bean>
+		</property>
+		
+		<property name="billNodeKey" value ="bt"></property>
+		<property name="billViewNodeKey" value ="bt"></property>
+		<property name="sourcevoPkName" value ="pk_bslist"></property>
+		<property name="sourcevoBillNOName" value ="listid"></property>
+		<property name="queryService">
+			<bean class="nc.ui.zl.ly_zylist.ace.billref.ZylistFromBslistQueryService"></bean>
+		</property>	</bean>
+	 </beans>

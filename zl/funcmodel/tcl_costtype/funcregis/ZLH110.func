@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="gbk"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean id="funcregister" class="nc.pubapp.pade.funcmodel.vo.FuncRegister"><property name="bmf_path" value="zl\METADATA\zl\tcl_costtype.bmf"/>
+<property name="busiActiveList">
+<list></list>
+</property>
+<property name="cfunid" value="0001ZZ1000000001JQ6B"/>
+<property name="class_name" value="nc.ui.pubapp.uif2app.ToftPanelAdaptorEx"/>
+<property name="dr" value="0"/>
+<property name="fun_name" value="收费大类"/>
+<property name="fun_property" value="0"/>
+<property name="funcRegisterButtonList">
+<list></list>
+</property>
+<property name="funcRegisterParamList">
+<list><bean class="nc.pubapp.pade.funcmodel.vo.FuncRegisterParam"><property name="dr" value="0"/>
+<property name="paramname" value="BeanConfigFilePath"/>
+<property name="paramvalue" value="nc/ui/zl/tcl_costtype/ace/view/Tcl_costtype_config.xml"/>
+<property name="parentid" value="0001ZZ1000000001JQ6B"/>
+<property name="pk_param" value="0001ZZ1000000001JQ6C"/>
+<property name="ts" value="2017-12-20 16:21:46"/>
+</bean>
+</list>
+</property>
+<property name="funcode" value="ZLH110"/>
+<property name="funnode_path" value="zl\ace\client\ZLH110.fnf"/>
+<property name="funtype" value="0"/>
+<property name="isbuttonpower" value="false"/>
+<property name="isenable" value="true"/>
+<property name="isfunctype" value="false"/>
+<property name="menuModelFilePath" value="zl/funcmodel/tcl_costtype/menuitemregis/ZLH110.menu"/>
+<property name="metaDataID" value="5a7d9e80-eac7-462f-a56d-591ab9b1f5e0"/>
+<property name="moduleName" value="zl"/>
+<property name="orgtypecode" value="GROUPORGTYPE00000000"/>
+<property name="own_module" value="ZLH1"/>
+<property name="pageList">
+<list></list>
+</property>
+<property name="pk_group" value="~"/>
+<property name="ts" value="2017-12-20 16:21:46"/>
+<property name="uif2model_path" value="zl\ace\uif2model\ZLH110.umf"/>
+</bean>
+
+</beans>

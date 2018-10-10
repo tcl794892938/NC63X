@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="GBK"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean id="refBean" class="com.yonyou.ria.ref.refmodel.cg.RefModelCGVO">
+<property name="author" value="Your Author Name"/>
+<property name="date" value="Your Create Data"/>
+<property name="dbEntity" value="feescale"/>
+<property name="dbModule" value="zl"/>
+<property name="dbPK" value="0001ZZ1000000001T2M1"/>
+<property name="lsFieldCode">
+<list>
+<value>code</value>
+<value>name</value>
+</list>
+</property>
+<property name="lsFieldName">
+<list>
+<value>标准编码</value>
+<value>标准名称</value>
+</list>
+</property>
+<property name="lsHiddenFieldCode">
+<list>
+<value>pk_feescale</value>
+<value>accountform</value>
+<value>accountscal</value>
+<value>roundform</value>
+<value>dbilldate</value>
+<value>creationtime</value>
+<value>modifiedtime</value>
+<value>vdef1</value>
+<value>vdef2</value>
+<value>vdef3</value>
+<value>vdef4</value>
+<value>vdef5</value>
+</list>
+</property>
+<property name="lsHiddenFieldName">
+<list>
+<value>项目主键</value>
+<value>计算方式</value>
+<value>计算数额</value>
+<value>舍入方式</value>
+<value>制单日期</value>
+<value>创建时间</value>
+<value>修改时间</value>
+<value>自定义项1</value>
+<value>自定义项2</value>
+<value>自定义项3</value>
+<value>自定义项4</value>
+<value>自定义项5</value>
+</list>
+</property>
+<property name="mdEntityId" value="285641c2-e52e-4dca-b538-9fbd75441e39"/>
+<property name="mdVersion" value="24"/>
+<property name="packageAndClassName"><bean class="com.yonyou.ria.codegen.pub.ClassBasicInfo">
+<property name="className" value="FeescaleRefModel"/>
+<property name="packageName" value="nc.ui.zl.abs.refmodel"/>
+</bean>
+</property>
+
+<property name="pkFieldCode" value="pk_feescale"/>
+<property name="project" value="Your Project"/>
+<property name="refCodeField" value="code"/>
+<property name="refName" value="收费标准(租赁)"/>
+<property name="refNameField" value="name"/>
+<property name="tableName" value="zl_feescale"/>
+<property name="version" value="1.0"/>
+<property name="wherePart" value="1=1"/>
+</bean>
+
+</beans>

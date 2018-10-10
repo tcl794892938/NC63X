@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- 转单参照单据信息 -->
+	<bean id="refInfo" class="nc.ui.pubapp.billref.src.RefInfo">
+		<property name="headVO">
+			<bean class="nc.vo.zl.tcl_contract.ContractVO">	</bean>
+		</property>
+		<property name="bodyVO">
+			<bean class="nc.vo.zl.tcl_contract.ContractCustVO">	</bean>
+		</property>
+		
+		<property name="billVO">
+			<bean class="nc.vo.zl.tcl_contract.AggContractVO">  </bean>
+		</property>
+		
+		<property name="billNodeKey" value ="bt2"></property>
+		<property name="billViewNodeKey" value ="bt2"></property>
+		<property name="sourcevoPkName" value ="pk_contract"></property>
+		<property name="sourcevoBillNOName" value ="vbillno"></property>
+		<property name="queryService">		
+			<bean class="nc.ui.zl.tcl_contract.ace.billref.H430FromH420QueryService"></bean>
+		</property>	</bean>
+	 </beans>

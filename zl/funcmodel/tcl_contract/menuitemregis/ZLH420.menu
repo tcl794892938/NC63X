@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="gbk"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean id="menuItem" class="nc.pubapp.pade.funcmodel.vo.MenuItem"><property name="dr" value="0"/>
+<property name="funModelFilePath" value="zl/funcmodel/tcl_contract/funcregis/ZLH420.menu"/>
+<property name="funcode" value="ZLH420"/>
+<property name="ismenutype" value="false"/>
+<property name="menuitemcode" value="ZLH420"/>
+<property name="menuitemname" value="合同管理"/>
+<property name="pk_menuitem" value="0001ZZ1000000001SLCR"/>
+<property name="resid" value="DZLH420"/>
+<property name="ts" value="2018-01-18 15:37:15"/>
+</bean>
+
+</beans>
