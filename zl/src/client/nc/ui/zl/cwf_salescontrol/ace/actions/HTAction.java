@@ -3,10 +3,13 @@ package nc.ui.zl.cwf_salescontrol.ace.actions;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.itf.zl.ITcl_contractMaintain;
+import nc.jdbc.framework.processor.ArrayListProcessor;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.bill.BillModel;
@@ -35,6 +38,7 @@ public class HTAction extends NCAction{
 		this.setBtnName("合同信息");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
 		this.billForm.getBillCardPanel().dataNotNullValidate();
@@ -76,15 +80,19 @@ public class HTAction extends NCAction{
 		Object pkfc= iQ.executeQuery(sql, new ColumnProcessor());
 		String sql2="select a.pk_contract from zl_contract a left join zl_contract_house b on a.pk_contract=b.pk_contract " +
 				"where nvl(a.dr,0)=0 and nvl(b.dr,0)=0 and b.pk_house='"+pkfc+"' and a.version=-1";
-		Object obja=iQ.executeQuery(sql2, new ColumnProcessor());
-		if(obja==null){
+		List<Object> listobj=(List<Object>) iQ.executeQuery(sql2, new ArrayListProcessor());
+		if(listobj==null||listobj.size()==0){
 			MessageDialog.showHintDlg(billForm, "提示", "该房间尚无合同信息，请检查！");
 			return;
 		}
+		List<String> obja=new ArrayList<String>();
+		for(int i=0;i<listobj.size();i++){
+			Object[] obj=(Object[]) listobj.get(i);
+			obja.add(obj[0].toString());
+		}
 		ITcl_contractMaintain qryht=NCLocator.getInstance().lookup(ITcl_contractMaintain.class);
-		AggContractVO aggvo=qryht.queryHTbyPK(obja.toString());
-		AggContractVO[] aggvos= new AggContractVO[]{aggvo};
-		SFClientUtil.openLinkedQueryDialog("ZLH420", billForm, new LinkQueryData(aggvos));
+		List<AggContractVO> aggvos=(List<AggContractVO>) qryht.queryHTbyPK2(obja);
+		SFClientUtil.openLinkedQueryDialog("ZLH420", billForm, new LinkQueryData(aggvos.toArray(new AggContractVO[aggvos.size()])));
 		
 	}
 

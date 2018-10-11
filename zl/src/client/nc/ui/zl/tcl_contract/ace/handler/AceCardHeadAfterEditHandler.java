@@ -33,7 +33,7 @@ public class AceCardHeadAfterEditHandler implements IAppEventHandler<CardHeadTai
 			int rowcount6=panel.getBillModel("pk_contract_zqfy").getRowCount();
 			int rowcount7=panel.getBillModel("pk_contract_zqfycf").getRowCount();
 			if(rowcount>0||rowcount2>0||rowcount3>0||rowcount4>0||rowcount5>0||rowcount6>0||rowcount7>0){
-				int it=MessageDialog.showOkCancelDlg(billForm, "提示", "更改合同起始终止日期将清空[保证金][免租期][增长期][业务拆分][财务拆分][周期费用][周期费用拆分]信息，是否确认更改？");
+				int it=MessageDialog.showOkCancelDlg(billForm, "提示", "更改合同起始终止日期将清空[保证金][免租期][增长期][业务拆分][财务拆分][周期费用拆分]信息，是否确认更改？");
 				if(it!=UIDialog.ID_OK){
 					panel.setHeadItem(e.getKey(), e.getOldValue());
 					return ;
@@ -43,8 +43,14 @@ public class AceCardHeadAfterEditHandler implements IAppEventHandler<CardHeadTai
 					panel.getBillModel("pk_contract_zzq").clearBodyData();
 					panel.getBillModel("pk_contract_ywcf").clearBodyData();
 					panel.getBillModel("pk_contract_cwcf").clearBodyData();
-					panel.getBillModel("pk_contract_zqfy").clearBodyData();
+					//panel.getBillModel("pk_contract_zqfy").clearBodyData();
 					panel.getBillModel("pk_contract_zqfycf").clearBodyData();
+					if(e.getKey().equals("dstartdate")){
+						int row=panel.getBillModel("pk_contract_zqfy").getRowCount();
+						for(int i=0;i<row;i++){
+							panel.getBillModel("pk_contract_zqfy").setValueAt(panel.getHeadItem("dstartdate").getValueObject(), i, "dstartdate");
+						}
+					}
 				}
 			}
 			

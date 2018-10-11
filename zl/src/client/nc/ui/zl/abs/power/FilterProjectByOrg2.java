@@ -19,19 +19,19 @@ import nc.vo.pubapp.AppContext;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-public class FilterProjectByOrg extends AbstractLinkageColumnListener {
+public class FilterProjectByOrg2 extends AbstractLinkageColumnListener {
 
 	private String orgField = null;
 	private String targetField = null;
 	private String filterField = null;
 
-	public FilterProjectByOrg(QueryConditionDLGDelegator dlg, String orgField, String basedocField) {
+	public FilterProjectByOrg2(QueryConditionDLGDelegator dlg, String orgField, String basedocField) {
 		super(dlg);
 		this.orgField = orgField;
 		this.targetField = basedocField;
 	}
 
-	public FilterProjectByOrg(QueryConditionDLGDelegator dlg, String orgField, String basedocField, String filterField) {
+	public FilterProjectByOrg2(QueryConditionDLGDelegator dlg, String orgField, String basedocField, String filterField) {
 		this(dlg, orgField, basedocField);
 		this.filterField = filterField;
 	}
@@ -122,7 +122,7 @@ public class FilterProjectByOrg extends AbstractLinkageColumnListener {
 				}
 				refPane.setPk_org(pk_orgs[0]);
 				refPane.setMultiRefFilterPKs(pk_orgs);
-				refPane.setMultiSelectedEnabled(true);
+				refPane.setMultiSelectedEnabled(false);
 			} 
 		}
 

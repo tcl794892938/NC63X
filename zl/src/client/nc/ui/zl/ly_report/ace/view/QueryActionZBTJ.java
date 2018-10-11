@@ -176,11 +176,15 @@ public class QueryActionZBTJ extends DefaultQueryAction {
 			}
 			String sql1 = "select x.proname as 项目名称,sum(x.ysmny) as 应收金额,sum(x.ssmny) as 实收金额, (case when sum(x.ysmny)=0 then 0 else round(sum(x.ssmny) / sum(x.ysmny), 4) * 100 end) as 收缴率,sum(nocont) as 无合同收费 "
 						+"from("
-						+"select a3.pk_org,a3.proname,a3.ysmny,a3.ssmny,0 nocont from(select r.pk_org,r.pk_project proname,sum(nvl(r.nrecmoney,0)) ysmny,sum(nvl(gb.nskmny,0)) ssmny "
-						+"from zl_recbill r join zl_costproject ct on(ct.pk_costproject=r.pk_costproject and ct.code not in('05','06')) left join zl_gather_b gb on( nvl(gb.dr,0)=0 and r.pk_recbill=gb.vsrcid "
-						+"and exists(select 1 from zl_gather g where nvl(g.dr, 0) = 0 and g.vbillstatus = 1 and g.pk_gather = gb.pk_gather)) "
+						+"select a3.pk_org,a3.proname,a3.ysmny,a3.ssmny,0 nocont from(select r.pk_org,r.pk_project proname,sum(nvl(r.nrecmoney,0)) ysmny,0 ssmny "
+						+"from zl_recbill r join zl_costproject ct on(ct.pk_costproject=r.pk_costproject and ct.code not like '05%' and ct.code not like '06%') "
 						+"where nvl(r.dr,0)=0 and r.vdef2 not in('zl_contract_bzj' )"+where3+" group by r.pk_org,r.pk_project)a3 " 
-						+"union all "
+						+"union all " +
+						"select * from (select g.pk_org,g.pk_project proname,0 ysmny,sum(nvl(gb.nskmny, 0)) ssmny,0 nocont from zl_gather g " +
+						"join zl_gather_b gb on (gb.pk_gather = g.pk_gather and nvl(gb.dr, 0) = 0) " +
+						"join zl_costproject ct on (ct.pk_costproject = gb.pk_costproject and ct.code not in ('05', '06')) " +
+						"where nvl(g.dr, 0) = 0 and g.vbillstatus = 1 and g.isadd = 'N' group by g.pk_org, g.pk_project) a5 " +
+						"union all "
 						+"select * from (select g.pk_org,g.pk_project proname,0 ysmny,0 ssmny,sum(nvl(gb.nskmny,0)) nocont from zl_gather g "
 						+"join zl_gather_b gb on(gb.pk_gather=g.pk_gather and nvl(gb.dr,0)=0) where nvl(g.dr,0)=0 and g.vbillstatus=1 and g.isadd='Y' "
 						+"group by  g.pk_org,g.pk_project)a4)x where "+where

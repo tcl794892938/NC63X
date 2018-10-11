@@ -12,7 +12,7 @@ import nc.ui.zl.abs.power.FilterBuildingByProject;
 import nc.ui.zl.abs.power.FilterCostpByOrg2;
 import nc.ui.zl.abs.power.FilterCustomerByProject;
 import nc.ui.zl.abs.power.FilterHouseByBuilding;
-import nc.ui.zl.abs.power.FilterProjectByOrg;
+import nc.ui.zl.abs.power.FilterProjectByOrg2;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.querytemplate.TemplateInfo;
 
@@ -34,8 +34,8 @@ public class CedRefCtionReferQuery extends DefaultBillReferQuery {
 		}
 		String[] baseDoc = new String[]{"pk_project"};
 		for(int i=0;i<baseDoc.length;i++){
-			FilterProjectByOrg baseDocByOrgFileter = 
-					new FilterProjectByOrg(dlgDelegator,"pk_org",baseDoc[i]); 
+			FilterProjectByOrg2 baseDocByOrgFileter = 
+					new FilterProjectByOrg2(dlgDelegator,"pk_org",baseDoc[i]); 
 			baseDocByOrgFileter.addEditorListener();
 		}
 		

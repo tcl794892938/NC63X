@@ -25,6 +25,8 @@ public class AbsEnumType {
 	public static final Integer HTtaxrate2 = 5;
 	/** 6%*/
 	public static final Integer HTtaxrate3 = 6;
+	/** 10%*/
+	public static final Integer HTtaxrate6 = 10;
 	/** 11%*/
 	public static final Integer HTtaxrate4 = 11;
 	/** 17%*/

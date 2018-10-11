@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nc.bs.framework.common.NCLocator;
-import nc.impl.zl.Lm_customerMaintainImpl;
 import nc.itf.uap.IUAPQueryBS;
 import nc.itf.uap.IVOPersistence;
 import nc.itf.zl.ILm_customerMaintain;
@@ -14,9 +13,6 @@ import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pubapp.uif2app.model.BillManageModel;
 import nc.ui.pubapp.uif2app.view.BillForm;
-import nc.ui.trade.business.HYPubBO_Client;
-import nc.vo.bd.cust.CustSupplierVO;
-import nc.vo.bd.cust.custorg.CustOrgVO;
 import nc.vo.zl.lm_customer.AggCustomerVO;
 import nc.vo.zl.lm_customer.CustomerVO;
 import nc.vo.zl.ly_pocustomers.PocustomersVO;
@@ -43,6 +39,7 @@ public void setBillForm(BillForm billForm) {
 		IUAPQueryBS iQ=NCLocator.getInstance().lookup(IUAPQueryBS.class);
 		Object[] obj=((BillManageModel)getModel()).getSelectedOperaDatas();
 		List<AggCustomerVO> agglist=new ArrayList<AggCustomerVO>();
+		String exception="";
 		for(int i=0;i<obj.length;i++){
 			AggCustomerVO aggvo=(AggCustomerVO) obj[i];
 			agglist.add(aggvo);
@@ -58,6 +55,7 @@ public void setBillForm(BillForm billForm) {
 			Integer a=(Integer) iQ.executeQuery(sql, new ColumnProcessor());
 			if(a>0){
 				agglist.remove(aggvo);
+				exception+="客户"+vo.getCustomername()+"已经签订合同房产，";
 				continue;
 			}
 			
@@ -65,6 +63,7 @@ public void setBillForm(BillForm billForm) {
 			Integer a1=(Integer) iQ.executeQuery(sql1, new ColumnProcessor());
 			if(a1>0){
 				agglist.remove(aggvo);
+				exception+="客户"+vo.getCustomername()+"已经签订多种经营合同，";
 				continue;
 			}
 			
@@ -72,6 +71,7 @@ public void setBillForm(BillForm billForm) {
 			Integer a2=(Integer)iQ.executeQuery(sql2, new ColumnProcessor());
 			if(a2>0){
 				agglist.remove(aggvo);
+				exception+="客户"+vo.getCustomername()+"已经录入车辆档案，";
 				continue;
 			}
 			
@@ -79,6 +79,7 @@ public void setBillForm(BillForm billForm) {
 			Integer a3=(Integer)iQ.executeQuery(sql3, new ColumnProcessor());
 			if(a3>0){
 				agglist.remove(aggvo);
+				exception+="客户"+vo.getCustomername()+"已经录入水电费预缴单，";
 				continue;
 			}
 			
@@ -86,6 +87,7 @@ public void setBillForm(BillForm billForm) {
 			Integer a4=(Integer)iQ.executeQuery(sql4, new ColumnProcessor());
 			if(a4>0){
 				agglist.remove(aggvo);
+				exception+="客户"+vo.getCustomername()+"已经录入水电费缴费单，";
 				continue;
 			}
 			
@@ -93,6 +95,7 @@ public void setBillForm(BillForm billForm) {
 			Integer a9=(Integer)iQ.executeQuery(sql9, new ColumnProcessor());
 			if(a9>0){
 				agglist.remove(aggvo);
+				exception+="客户"+vo.getCustomername()+"已经生成收款单，";
 				continue;
 			}
 		}
@@ -136,7 +139,8 @@ public void setBillForm(BillForm billForm) {
 		//super.doAction(e);
 		
 		if(aggvos==null || aggvos.length==0){
-			MessageDialog.showHintDlg(billForm, "提示", "无可删数据!");
+			String yc=exception.substring(0, exception.length()-1);
+			MessageDialog.showHintDlg(billForm, "提示", "无可删数据("+yc+")!请先手动删除业务单据再操作!");
 		}
 		else{
 			MessageDialog.showHintDlg(billForm, "提示", "删除成功!");

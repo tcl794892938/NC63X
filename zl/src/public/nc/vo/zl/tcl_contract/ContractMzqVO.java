@@ -5,10 +5,13 @@ import nc.vo.pub.SuperVO;
 import nc.vo.pub.lang.UFBoolean;
 import nc.vo.pub.lang.UFDate;
 import nc.vo.pub.lang.UFDateTime;
-import nc.vo.pub.lang.UFDouble;
 import nc.vo.pubapp.pattern.model.meta.entity.vo.VOMetaFactory;
 
 public class ContractMzqVO extends SuperVO {
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1785389109561741359L;
 /**
 *免租结束日期
 */
@@ -59,6 +62,19 @@ public String vdef5;
 public String vmemo;
 
 public Integer dr=0;
+
+/**
+ * 是否周期费用拆分
+ */
+public UFBoolean iszqcf;
+
+public UFBoolean getIszqcf() {
+	return iszqcf;
+}
+
+public void setIszqcf(UFBoolean iszqcf) {
+	this.iszqcf = iszqcf;
+}
 
 public Integer getDr() {
 	return dr;

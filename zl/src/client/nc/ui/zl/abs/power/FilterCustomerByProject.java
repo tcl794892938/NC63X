@@ -92,11 +92,18 @@ public class FilterCustomerByProject extends AbstractLinkageColumnListener{
 			}
 
 			if (!StringUtils.isEmpty(filterField) && diffValues.size()>0) {
-				String[] pk_orgs = diffValues.toArray(new String[0]);
+				//String[] pk_orgs = diffValues.toArray(new String[0]);
+				String pks=" ";
+				for(int i=0;i<diffValues.size();i++){
+					pks=pks+"'"+diffValues.get(i)+"'";
+					if(i<diffValues.size()-1){
+						pks=pks+",";
+					}
+				}
 				refPane.getRefModel().addWherePart(" and exists (select b.* from zl_customer_zzxm b " +
-						"where nvl(b.dr,0)=0 and b.pk_customer=zl_customer.pk_customer and b.pk_project in ('"+pk_orgs[0]+"')) ");
-				refPane.setPk_org(pk_orgs[0]);
-				refPane.setMultiRefFilterPKs(pk_orgs);
+						"where nvl(b.dr,0)=0 and b.pk_customer=zl_customer.pk_customer and b.pk_project in ("+pks+")) ");
+				//refPane.setPk_org(pk_orgs[0]);
+				//refPane.setMultiRefFilterPKs(pk_orgs);
 				refPane.setMultiSelectedEnabled(false);
 			} 
 		}

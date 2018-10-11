@@ -32,6 +32,7 @@ public class AceAddHandler implements IAppEventHandler<AddEvent> {
 			aggvo.getParentVO().setModifier(null);
 			aggvo.getParentVO().setModifiedtime(null);
 			aggvo.getParentVO().setPk_housesource(null);
+			aggvo.getParentVO().setHousestate(0);
 			panel.setBillValueVO(aggvo);
 			//model.directlyUpdate(aggvo);
 		}

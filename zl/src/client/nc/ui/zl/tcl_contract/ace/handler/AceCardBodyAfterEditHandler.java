@@ -133,6 +133,91 @@ public class AceCardBodyAfterEditHandler implements IAppEventHandler<CardBodyAft
 			}
 		}
 		
+		if(e.getKey().equals("vdef4")&&tabcode.equals("pk_contract_house")){
+			try {
+				BillModel m3=billForm.getBillCardPanel().getBillModel("pk_contract_zqfy");
+				String sql="select pk_costproject from zl_costproject where nvl(dr,0)=0 and code='02'";
+				Object pk=iQ.executeQuery(sql, new ColumnProcessor());
+				Object pk_house=model2.getValueObjectAt(e.getRow(), "pk_house");
+				Object obj=billForm.getBillCardPanel().getHeadItem("pk_customer").getValueObject();
+				Object objdate=billForm.getBillCardPanel().getHeadItem("dstartdate").getValueObject();
+				if(pk_house==null){
+					MessageDialog.showHintDlg(billForm, "提示", "请先选择楼栋房产名称！");
+					model2.setValueAt(null, e.getRow(), e.getKey());
+					return ;
+				}
+				if(e.getValue().equals(true)){
+					//校验房产-收费项目重复
+					int rowcount=m3.getRowCount();
+					for(int i=0;i<rowcount;i++){
+						Object obj1=getColvalue(m3.getValueObjectAt(i, "pk_house"));
+						Object obj2=getColvalue(m3.getValueObjectAt(i, "pk_costproject"));
+						Object obj3=getColvalue(pk_house);
+						if(obj1==null||obj2==null||obj3==null){
+							continue ;
+						}
+						String pks2=obj1.toString()+obj2.toString();
+						String pks1=obj3.toString()+pk.toString();
+						if(pks1.equals(pks2)){
+							MessageDialog.showHintDlg(billForm, "提示", "存在重复的房产和收费项目！");
+							model2.setValueAt(null, e.getRow(), e.getKey());
+							return ;
+						}
+					}
+					m3.addLine();
+					m3.setValueAt((rowcount+1)*10+"", rowcount, "rowno");
+					m3.setValueAt(obj, rowcount, m3.getItemIndex("pk_customer"));
+					m3.setValueAt(pk_house, rowcount, m3.getItemIndex("pk_house"));
+					m3.setValueAt(pk, rowcount, m3.getItemIndex("pk_costproject"));
+					m3.setValueAt(model2.getValueAt(e.getRow(), "narea"), rowcount, m3.getItemIndex("narea"));
+					m3.setValueAt(6, rowcount, m3.getItemIndex("ntaxrate"));
+					m3.setValueAt(objdate, rowcount, m3.getItemIndex("dstartdate"));
+					m3.loadLoadRelationItemValue();
+					model2.setCellEditable(e.getRow(), "pk_house", false);
+				}else{
+					int[] a={-1};
+					int rowcount=m3.getRowCount();
+					for(int i=0;i<rowcount;i++){
+						if(getColvalue(pk_house).equals(getColvalue(m3.getValueObjectAt(i, "pk_house")))
+								&&pk.equals(getColvalue(m3.getValueObjectAt(i, "pk_costproject")))){
+							a[0]=i;
+						}
+					}
+					if(a[0]!=-1){
+						BillModel m4=billForm.getBillCardPanel().getBillModel("pk_contract_zqfycf");
+						int row1=m4.getRowCount();
+						if(row1>0){
+							for(int i=0;i<row1;i++){
+								Object obj1=getColvalue(m4.getValueObjectAt(i, "pk_house"));
+								Object obj2=getColvalue(m4.getValueObjectAt(i, "pk_costproject"));
+								Object obj3=getColvalue(pk_house);
+								if(obj1==null||obj2==null||obj3==null){
+									continue ;
+								}
+								String pks2=obj1.toString()+obj2.toString();
+								String pks1=obj3.toString()+pk.toString();
+								if(pks1.equals(pks2)){
+									MessageDialog.showHintDlg(billForm, "提示", "该房产已经生成周期费用拆分，无法取消！");
+									model2.setValueAt(true, e.getRow(), e.getKey());
+									return;
+								}
+							}
+						}
+						m3.delLine(a);
+						int row2=m3.getRowCount();
+						if(row2>0){
+							for(int j=0;j<row2;j++){
+								m3.setValueAt((j+1)*10+"", j, "rowno");
+							}
+						}
+					}
+					model2.setCellEditable(e.getRow(), "pk_house", true);
+				}
+			} catch (BusinessException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 		//======================================================保证金页签=============================================================
 		if(e.getKey().equals("nysmny")&&tabcode.equals("pk_contract_bzj")){
 			
@@ -783,6 +868,17 @@ public class AceCardBodyAfterEditHandler implements IAppEventHandler<CardBodyAft
 	
 	private UFDouble getUFdobj(Object obj){
 		return obj==null?new UFDouble(0):new UFDouble(obj.toString());
+	}
+	
+	private static Object getColvalue(Object obj){
+		
+		if(obj==null){
+			return obj;
+		}else if(obj instanceof DefaultConstEnum){
+			return ((DefaultConstEnum)obj).getValue();
+		}
+		
+		return null;
 	}
 
 }

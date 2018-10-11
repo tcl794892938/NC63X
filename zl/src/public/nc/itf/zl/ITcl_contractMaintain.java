@@ -1,5 +1,7 @@
 package nc.itf.zl;
 
+import java.util.List;
+
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.zl.tcl_contract.AggContractVO;
 import nc.vo.pub.BusinessException;
@@ -37,6 +39,7 @@ public interface ITcl_contractMaintain {
 	 * 根据pk查询合同
 	 */
 	public AggContractVO queryHTbyPK(String pk) throws BusinessException;
+	public List<AggContractVO> queryHTbyPK2(List<String> pks) throws BusinessException;
 	
 	public AggContractVO[] queryforJC(IQueryScheme queryScheme)
 			throws BusinessException;

@@ -1,6 +1,7 @@
 package nc.ui.zl.lyw_report_customeritems.ace.abspower;
 
 
+import nc.desktop.ui.WorkbenchEnvironment;
 import nc.pubitf.setting.defaultdata.OrgSettingAccessor;
 import nc.ui.pubapp.uif2app.query2.IQueryConditionDLGInitializer;
 import nc.ui.pubapp.uif2app.query2.QueryConditionDLGDelegator;
@@ -8,6 +9,7 @@ import nc.ui.uif2.model.BillManageModel;
 import nc.ui.zl.abs.power.MusFilterCustomerByProject;
 import nc.ui.zl.abs.power.MusFilterProjectByOrg2;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
+import nc.vo.uap.rbac.profile.FunctionPermProfileManager;
 
 public class BillQueryConditionDLGInitializer implements
 		IQueryConditionDLGInitializer {
@@ -26,7 +28,11 @@ public class BillQueryConditionDLGInitializer implements
 	@Override
 	public void initQueryConditionDLG(QueryConditionDLGDelegator dlgDelegator) {
 		
-		dlgDelegator.registerNeedPermissionOrgFieldCode("pk_org");//注册主组织过滤
+		String[]pks=FunctionPermProfileManager
+		        .getInstance()
+		        .getProfile(
+		            WorkbenchEnvironment.getInstance().getLoginUser().getUser_code()).getFuncSubInfo("ZLH420").getFuncPermissionPkorgs();
+				dlgDelegator.registerNeedPermissionOrgFieldCode("customeritems.pk_org",pks);//注册主组织过滤
 		dlgDelegator.getDealEnumTypeRef();
 		this.setDefaultPk_org(dlgDelegator);
 		//当前组织下的项目

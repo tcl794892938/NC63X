@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
+import nc.itf.zl.ITcl_contractMaintain;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.vo.pub.BusinessException;
@@ -39,6 +40,14 @@ public class RenewalAction extends nc.ui.pubapp.uif2app.actions.CopyAction {
 	  @Override
 	  public void doAction(ActionEvent e) throws Exception {
 		  
+		  Object obj=getModel().getSelectedData();
+		  AggContractVO aggvo1=(AggContractVO)obj;
+		  String pk=aggvo1.getParentVO().getPk_contract();
+		  
+		  ITcl_contractMaintain itm=NCLocator.getInstance().lookup(ITcl_contractMaintain.class);
+		  AggContractVO newagg=itm.queryHTbyPK(pk);
+		  
+		  getModel().directlyUpdate(newagg);
 		  AggContractVO aggvo=(AggContractVO) getModel().getSelectedData();
 		  if(aggvo==null){
 				return;
@@ -128,7 +137,7 @@ public class RenewalAction extends nc.ui.pubapp.uif2app.actions.CopyAction {
 			} catch (BusinessException e) {
 				e.printStackTrace();
 			}
-			if(count>0){
+			if(count>0||aggvo.getParentVO().getVbillstatus()!=1||aggvo.getParentVO().getHtstatus()==4){
 				return false;
 			}
 			return true;

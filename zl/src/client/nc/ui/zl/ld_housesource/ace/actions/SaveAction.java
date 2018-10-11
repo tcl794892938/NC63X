@@ -6,6 +6,7 @@ import java.util.Map;
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.BeanProcessor;
+import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapProcessor;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pubapp.uif2app.actions.DifferentVOSaveAction;
@@ -22,9 +23,41 @@ public class SaveAction extends DifferentVOSaveAction {
 	public void doAction(ActionEvent e) throws Exception {
 		
 		billform.getBillCardPanel().dataNotNullValidate();
+		billform.getBillCardPanel().stopEditing();
 		Object rnumber=billform.getBillCardPanel().getHeadItem("roomnumber").getValueObject();
 		if(!isNumeric(getStgObj(rnumber))){
 			MessageDialog.showErrorDlg(billform, "错误", "房号不能带有非数字型字符，请检查！");
+			return;
+		}
+		Object unit=billform.getBillCardPanel().getHeadItem("unit").getValueObject();
+		Object estatecode=billform.getBillCardPanel().getHeadItem("estatecode").getValueObject();
+		Object estatename=billform.getBillCardPanel().getHeadItem("estatename").getValueObject();
+		Object pk_org=billform.getBillCardPanel().getHeadItem("pk_org").getValueObject();
+		Object projectname=billform.getBillCardPanel().getHeadItem("projectname").getValueObject();
+		Object pkld=billform.getBillCardPanel().getHeadItem("buildname").getValueObject();
+		
+		IUAPQueryBS iQ=NCLocator.getInstance().lookup(IUAPQueryBS.class);
+		String sqla="select count(*) from zl_housesource where dr=0 and pk_org='"+pk_org+"' and projectname='"+projectname+"' " +
+				" and buildname='"+pkld+"' and roomnumber='"+rnumber+"' and unit='"+unit+"'";
+		int a=(Integer) iQ.executeQuery(sqla, new ColumnProcessor());
+		if(a>0){
+			MessageDialog.showErrorDlg(billform, "错误", "该单元下房号已存在！");
+			return;
+		}
+		
+		String sqlb="select count(*) from zl_housesource where dr=0 and pk_org='"+pk_org+"' and projectname='"+projectname+"' " +
+				" and buildname='"+pkld+"' and estatecode='"+estatecode+"'";
+		int b=(Integer) iQ.executeQuery(sqlb, new ColumnProcessor());
+		if(b>0){
+			MessageDialog.showErrorDlg(billform, "错误", "该房源编码已存在！");
+			return;
+		}
+		
+		String sqlc="select count(*) from zl_housesource where dr=0 and pk_org='"+pk_org+"' and projectname='"+projectname+"' " +
+				" and buildname='"+pkld+"' and estatename='"+estatename+"'";
+		int c=(Integer) iQ.executeQuery(sqlc, new ColumnProcessor());
+		if(c>0){
+			MessageDialog.showErrorDlg(billform, "错误", "该房源名称已存在！");
 			return;
 		}
 		
@@ -32,7 +65,6 @@ public class SaveAction extends DifferentVOSaveAction {
 		super.doAction(e);
 		
 		//String pkld=aggvo.getParentVO().getBuildname();
-		Object pkld=billform.getBillCardPanel().getHeadItem("buildname").getValueObject();
 		//回写楼栋信息
 		
 		String sql="select floorn,nnum,buildarea,buildarea2 from" +
@@ -44,7 +76,6 @@ public class SaveAction extends DifferentVOSaveAction {
 			"count(1) nnum from zl_housesource e " +
 			" where  buildname ='"+pkld+"' and nvl(dr,0)=0 )c ";
 		
-		IUAPQueryBS iQ=NCLocator.getInstance().lookup(IUAPQueryBS.class);
 		Map<String, Object> map=(Map<String, Object>)iQ.executeQuery(sql, new MapProcessor());
 		
 		String sql2="select * from zl_buildingfile where pk_buildingfile='"+pkld+"'";

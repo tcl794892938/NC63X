@@ -109,7 +109,7 @@ public class ImportAction extends NCAction{
 			IUAPQueryBS iQ = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 			
 			//获取组织pk_org
-			String get_pk_org_o = "select org_orgs.pk_org from org_orgs where nvl(dr,0)=0 and org_orgs.name='"+getStgObj(exlimp[1][b])+"' and org_orgs.code='"+getStgObj(exlimp[1][a])+"'";
+			String get_pk_org_o = "select org_orgs.pk_org from org_orgs where nvl(dr,0)=0 and org_orgs.name='"+getStgObj(exlimp[1][b]).trim()+"' and org_orgs.code='"+getStgObj(exlimp[1][a])+"'";
 			Object pk_org_o=iQ.executeQuery(get_pk_org_o, new ColumnProcessor());
 			if(pk_org_o==null || "".equals(pk_org_o)){
 				MessageDialog.showHintDlg(listView, "提示", "组织编码不存在！");
@@ -117,7 +117,7 @@ public class ImportAction extends NCAction{
 			}
 			
 			//获取项目信息主键
-			String get_pk_proj_o = "select pk_project from zl_project where nvl(dr,0)=0 and name='"+getStgObj(exlimp[1][c])+"' and pk_org='"+getStgObj(pk_org_o)+"'";
+			String get_pk_proj_o = "select pk_project from zl_project where nvl(dr,0)=0 and name='"+getStgObj(exlimp[1][c]).trim()+"' and pk_org='"+getStgObj(pk_org_o)+"'";
 			Object pk_proj_o=iQ.executeQuery(get_pk_proj_o, new ColumnProcessor());
 			if(pk_proj_o==null || "".equals(pk_proj_o)){
 				MessageDialog.showHintDlg(listView, "提示", "项目信息不存在！");
@@ -125,7 +125,7 @@ public class ImportAction extends NCAction{
 			}
 			
 			//获取楼栋主键
-			String get_pk_build_o = "select pk_buildingfile from zl_buildingfile where nvl(dr,0)=0 and name='"+getStgObj(exlimp[1][d])+"' and pk_org='"+getStgObj(pk_org_o)+"' and pk_projectid='"+getStgObj(pk_proj_o)+"'";
+			String get_pk_build_o = "select pk_buildingfile from zl_buildingfile where nvl(dr,0)=0 and name='"+getStgObj(exlimp[1][d]).trim()+"' and pk_org='"+getStgObj(pk_org_o)+"' and pk_projectid='"+getStgObj(pk_proj_o)+"'";
 			Object pk_build_o=iQ.executeQuery(get_pk_build_o, new ColumnProcessor());
 			if(pk_proj_o==null || "".equals(pk_proj_o)){
 				MessageDialog.showHintDlg(listView, "提示", "该楼栋不存在！");
@@ -143,10 +143,10 @@ public class ImportAction extends NCAction{
 					if(voList.get(i).getEstatecode().equals(colobj[g])){
 						
 						double buildarea = Double.parseDouble(getStgObj(colobj[k]));
-						//double innerarea = Double.parseDouble(getStgObj(colobj[l]));
+						double innerarea = Double.parseDouble(getStgObj(colobj[l]));
 						if(colobj[m].equals("空置")||colobj[m].equals("自用")){
 							voList.get(i).setBuildarea(new UFDouble(buildarea));
-							//voList.get(i).setInnerarea(new UFDouble(innerarea));
+							voList.get(i).setInnerarea(new UFDouble(innerarea));
 						}
 						break;
 					}
@@ -160,8 +160,8 @@ public class ImportAction extends NCAction{
 			
 			String allbuild = AllBuild(voList);
 			UFDouble nb = new UFDouble(getStr(allbuild));
-			//String allinner = AllInner(voList);
-			//UFDouble ni = new UFDouble(getStr(allinner));
+			String allinner = AllInner(voList);
+			UFDouble ni = new UFDouble(getStr(allinner));
 			String allpersonal = AllPersonal(voList);
 			UFDouble np = new UFDouble(getStr(allpersonal));
 			//获取当前项目下所有楼栋
@@ -172,7 +172,7 @@ public class ImportAction extends NCAction{
 				String pkb = bvoList.get(i).getPk_buildingfile();
 				if(bvoList.get(i).getPk_buildingfile().equals(getStgObj(pk_build_o))){
 					bvoList.get(i).setBuiltuparea(nb.sub(np));
-					//bvoList.get(i).setInnerarea(ni);
+					bvoList.get(i).setInnerarea(ni);
 					bvoList.get(i).setPersonalarea(np);
 					break;
 				}
@@ -213,7 +213,7 @@ public class ImportAction extends NCAction{
 						getStgObj(bp.getHeadItem("estatecode").getName()).equals(getStgObj(exob[i]))||
 						getStgObj(bp.getHeadItem("estatename").getName()).equals(getStgObj(exob[i]))||
 						getStgObj(bp.getHeadItem("buildarea").getName()).equals(getStgObj(exob[i]))
-						//||getStgObj(bp.getHeadItem("innerarea").getName()).equals(getStgObj(exob[i]))
+						||getStgObj(bp.getHeadItem("innerarea").getName()).equals(getStgObj(exob[i]))
 						){
 					count++;
 				}

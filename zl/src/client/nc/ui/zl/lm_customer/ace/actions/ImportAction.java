@@ -674,7 +674,7 @@ public class ImportAction extends NCAction {
 			//用户表的身份字段是人员基本信息表的主键
 			String count="select count(*) from zl_projectcontrol_b where nvl(dr,0)=0 and pk_projectcontrol " +
 					"in (select p.pk_projectcontrol from zl_projectcontrol p where nvl(p.dr,0)=0 and " +
-					"p.pk_org=in (select o.pk_org from org_orgs o where nvl(dr,0)=0 and " +
+					"p.pk_org in (select o.pk_org from org_orgs o where nvl(dr,0)=0 and " +
 					"o.code='"+getStgObj(exobj0[maph1.get(maph.get(0))])+"') ) and usercode = (select s.pk_base_doc " +
 							"from sm_user s where nvl(s.dr,0)=0 and s.cuserid='"+AppContext.getInstance().getPkUser()+"')";
 			Integer count1=(Integer) iQ.executeQuery(count, new ColumnProcessor());
@@ -691,7 +691,7 @@ public class ImportAction extends NCAction {
 				if (getStgObj(exobj[maph2.get(maph.get(9))]).equals(getStgObj(j + 1))) {
 					String sql_pro = "select pk_project from zl_project where nvl(dr,0)=0 and pk_org in " +
 							"(select o.pk_org from org_orgs o where nvl(dr,0)=0 and o.code='"+getStgObj(exobj0[maph1.get(maph.get(0))])+"') " +
-									"and code='"+ getStgObj(exobj[maph1.get(maph.get(10))]) + "' and "+procontrol+"";
+									"and code='"+ getStgObj(exobj[maph2.get(maph.get(10))]) + "' and "+procontrol+"";
 					Object pk_pro = iQ.executeQuery(sql_pro, new ColumnProcessor());
 					if (getStgObj(pk_pro).equals("")) {
 						error += (i + 1) + ",";

@@ -22,7 +22,6 @@ import nc.vo.pub.lang.UFDate;
 import nc.vo.zl.lyw_billconfirmed.AggBillconfirmedVO;
 import nc.vo.zl.lyw_billconfirmed.BillconfirmedBVO;
 import nc.vo.zl.lyw_billconfirmed.BillconfirmedVO;
-import nc.vo.zl.lyw_confirmation.ConfirmationVO;
 
 public class Lyw_billconfirmedMaintainImpl extends AceLyw_billconfirmedPubServiceImpl
 		implements ILyw_billconfirmedMaintain {
@@ -122,18 +121,19 @@ public class Lyw_billconfirmedMaintainImpl extends AceLyw_billconfirmedPubServic
 				String sql1="update zl_confirmation set amountconfirmed=nvl(amountconfirmed,0)+nvl("+cdbvos.get(i).getNnotaxmny()+",0) " +
 						"where pk_confirmation='"+cdbvos.get(i).getVsrcid()+"'";
 				dao.executeUpdate(sql1);
-				String sql2 = "";
-				if(cdbvos.get(i).getVdef2().equals("zl_contract_bzj")){
-					sql2="update "+cdbvos.get(i).getVdef2()+" set "+map.get(cdbvos.get(i).getVdef2())+"= to_char((case when "+map.get(cdbvos.get(i).getVdef2())+"='~' then 0 else to_number("+map.get(cdbvos.get(i).getVdef2())+") end) +"+cdbvos.get(i).getAmountconfirming()+")"+
-
+				if(cdbvos.get(i).getVdef2()!=null){
+					String sql2 = "";
+					if(cdbvos.get(i).getVdef2().equals("zl_contract_bzj")){
+						sql2="update "+cdbvos.get(i).getVdef2()+" set "+map.get(cdbvos.get(i).getVdef2())+"= to_char((case when "+map.get(cdbvos.get(i).getVdef2())+"='~' then 0 else to_number("+map.get(cdbvos.get(i).getVdef2())+") end) +"+cdbvos.get(i).getAmountconfirming()+")"+
+								
 							" where "+map2.get(cdbvos.get(i).getVdef2())+"='"+cdbvos.get(i).getVdef1()+"'";
-				}else{
-					sql2="update "+cdbvos.get(i).getVdef2()+" set "+map.get(cdbvos.get(i).getVdef2())+"=nvl("+map.get(cdbvos.get(i).getVdef2())+",0)+"+
-							cdbvos.get(i).getAmountconfirming()+
-							" where "+map2.get(cdbvos.get(i).getVdef2())+"='"+cdbvos.get(i).getVdef1()+"' ";
+					}else{
+						sql2="update "+cdbvos.get(i).getVdef2()+" set "+map.get(cdbvos.get(i).getVdef2())+"=nvl("+map.get(cdbvos.get(i).getVdef2())+",0)+"+
+								cdbvos.get(i).getAmountconfirming()+
+								" where "+map2.get(cdbvos.get(i).getVdef2())+"='"+cdbvos.get(i).getVdef1()+"' ";
+					}
+					dao.executeUpdate(sql2);//回写业务单据
 				}
-				
-				dao.executeUpdate(sql2);//回写业务单据
 			}
 
 		//ivp.updateVOList(cnvos);
@@ -200,11 +200,12 @@ public class Lyw_billconfirmedMaintainImpl extends AceLyw_billconfirmedPubServic
 				String sql1="update zl_confirmation set amountconfirmed=nvl(amountconfirmed,0)-nvl("+cdbvos.get(i).getNnotaxmny()+",0) " +
 						"where pk_confirmation='"+cdbvos.get(i).getVsrcid()+"'";
 				dao.executeUpdate(sql1);
-				String sql2="update "+cdbvos.get(i).getVdef2()+" set "+map.get(cdbvos.get(i).getVdef2())+"=nvl("+map.get(cdbvos.get(i).getVdef2())+",0)-"+
-						cdbvos.get(i).getAmountconfirming()+
-						" where "+map2.get(cdbvos.get(i).getVdef2())+"='"+cdbvos.get(i).getVdef1()+"'";
-				
-				dao.executeUpdate(sql2);//恢复业务单据已确认收入金额
+				if(cdbvos.get(i).getVdef2()!=null){
+					String sql2="update "+cdbvos.get(i).getVdef2()+" set "+map.get(cdbvos.get(i).getVdef2())+"=nvl("+map.get(cdbvos.get(i).getVdef2())+",0)-"+
+							cdbvos.get(i).getAmountconfirming()+
+							" where "+map2.get(cdbvos.get(i).getVdef2())+"='"+cdbvos.get(i).getVdef1()+"'";
+					dao.executeUpdate(sql2);//恢复业务单据已确认收入金额
+				}
 			}
 		
 		//ivp.updateVOList(cnvos);

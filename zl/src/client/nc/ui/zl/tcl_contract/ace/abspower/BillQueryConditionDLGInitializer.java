@@ -55,7 +55,7 @@ public class BillQueryConditionDLGInitializer implements
 			baseDocByOrgFileter.addEditorListener();
 		}
 		
-		String[] baseDoc3 = new String[] { "pk_customer" };
+		String[] baseDoc3 = new String[] { "pk_contract_house.pk_customer" };
 		for (int i = 0; i < baseDoc3.length; i++) {
 			FilterCustomerByProject baseDocByOrgFileter = new FilterCustomerByProject(
 					dlgDelegator, "pk_project", baseDoc3[i]);

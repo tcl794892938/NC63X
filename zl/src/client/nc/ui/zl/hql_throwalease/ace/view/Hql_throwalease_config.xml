@@ -199,6 +199,7 @@
 				<ref bean="separatorAction" />
 				<ref bean="linkQueryAction" />
 				<ref bean="separatorAction" />
+				<!--<ref bean="updateAction" />-->
 			</list>
 		</property>
 	</bean>
@@ -359,7 +360,7 @@
 				<ref bean="unCommitScriptAction"/>
 				<ref bean="approveScriptAction"/>
 				<ref bean="uNApproveScriptAction"/>
-				<!--<ref bean="pFApproveStatusInfoAction"/>-->
+				<ref bean="pFApproveStatusInfoAction"/>
 			</list>
 		</property>
 	</bean>
@@ -567,12 +568,18 @@
 		<property name="nodeKey" value="ot" />
 		<property name="exceptionHandler"><ref bean="exceptionHandler" /></property>
 	</bean>
+	
+	<!--======= 动作：[newActions] [数据刷新] ===========-->
+	<!--<bean id="updateAction" class="nc.ui.zl.hql_throwalease.ace.actions.UpdateAction">
+		<property name="model"><ref bean="bmModel"/></property>
+		<property name="billform"><ref bean="billForm"/></property>
+	</bean>-->
 
 	<!--======= 动作：[newActions] [查看审批意见] ===========-->
-	<!--<bean id="pFApproveStatusInfoAction" class="nc.ui.pubapp.uif2app.actions.pflow.PFApproveStatusInfoAction">
+	<bean id="pFApproveStatusInfoAction" class="nc.ui.pubapp.uif2app.actions.pflow.PFApproveStatusInfoAction">
 		<property name="model"><ref bean="bmModel"/></property>
 		<property name="exceptionHandler"><ref bean="exceptionHandler" /></property>
-	</bean>-->
+	</bean>
 
 	<!--======= 动作：[newActions] [保存] ===========-->
 	<!--<bean id="saveScriptAction" class="nc.ui.pubapp.uif2app.actions.pflow.SaveScriptAction">

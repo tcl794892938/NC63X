@@ -162,7 +162,7 @@ public class Hql_throwaleaseMaintainImpl extends AceHql_throwaleasePubServiceImp
 			List<ContractHouseVO> chlist=(List<ContractHouseVO>) dao.executeQuery(fcsql, new BeanListProcessor(ContractHouseVO.class));
 			if(chlist!=null&&chlist.size()>0){
 				for(int i=0;i<chlist.size();i++){
-					chlist.get(i).setDr(2);
+					chlist.get(i).setVdef5("Y");
 				}
 				dao.updateVOArray(chlist.toArray(new ContractHouseVO[chlist.size()]));
 			}
@@ -190,15 +190,6 @@ public class Hql_throwaleaseMaintainImpl extends AceHql_throwaleasePubServiceImp
 				}
 				
 			}
-			//周期费用
-/*			String zq="select * from zl_contract_zqfy where nvl(dr,0)=0 and pk_house in("+pks+") and pk_contract='"+hvo.getVsrcid()+"'";
-			List<ContractZqfyVO> zqlist=(List<ContractZqfyVO>)dao.executeQuery(zq, new BeanListProcessor(ContractZqfyVO.class));
-			if(zqlist!=null&&zqlist.size()>0){
-				for(int i=0;i<zqlist.size();i++){
-					zqlist.get(i).setDr(2);
-				}
-				dao.updateVOArray(zqlist.toArray(new ContractZqfyVO[zqlist.size()]));
-			}*/
 			if(pk_zq!=null&&!pk_zq.equals("")){
 				//周期费用拆分
 				String zq2="select * from zl_contract_zqfycf where nvl(dr,0)=0 and pk_house in("+pks+") and pk_contract_zqfycf in ("+pk_zq+")";
@@ -226,99 +217,103 @@ public class Hql_throwaleaseMaintainImpl extends AceHql_throwaleasePubServiceImp
 			List<AggConfirmationVO> aggclist=new ArrayList<AggConfirmationVO>();
 			for(int i=0;i<fyqs.length;i++){
 				Double js=Double.parseDouble(fyqs[i].getNjsmny().toString());
-				if(js==0){
-					continue;
-				}
-				RecbillVO recvo=new RecbillVO();
-				recvo.setPk_org(hvo.getPk_org());
-				recvo.setPk_org_v(hvo.getPk_org_v());
-				recvo.setPk_group(hvo.getPk_group());
-				recvo.setPk_project(hvo.getPk_project());
-				recvo.setDbilldate(new UFDate());
-				recvo.setCreator(AppContext.getInstance().getPkUser());
-				recvo.setCreationtime(AppContext.getInstance().getServerTime());
-				recvo.setApprover(AppContext.getInstance().getPkUser());
-				recvo.setApprovetime(AppContext.getInstance().getServerTime());
-				//recvo.setVbillcode(getVbillCode(i, hvo.getPk_billtype()));
-				recvo.setPk_customer(fyqs[i].getPk_customer());
-				recvo.setPk_house(fyqs[i].getPk_housesource());
-				
-				for(int j=0;j<hsvo.size();j++){
-					if(hsvo.get(j).getPk_housesource().equals(recvo.getPk_house())){
-						recvo.setPk_building(hsvo.get(j).getBuildname());
+				if(js!=0){
+					RecbillVO recvo=new RecbillVO();
+					recvo.setPk_org(hvo.getPk_org());
+					recvo.setPk_org_v(hvo.getPk_org_v());
+					recvo.setPk_group(hvo.getPk_group());
+					recvo.setPk_project(hvo.getPk_project());
+					recvo.setDbilldate(new UFDate());
+					recvo.setCreator(AppContext.getInstance().getPkUser());
+					recvo.setCreationtime(AppContext.getInstance().getServerTime());
+					recvo.setApprover(AppContext.getInstance().getPkUser());
+					recvo.setApprovetime(AppContext.getInstance().getServerTime());
+					//recvo.setVbillcode(getVbillCode(i, hvo.getPk_billtype()));
+					recvo.setPk_customer(fyqs[i].getPk_customer());
+					recvo.setPk_house(fyqs[i].getPk_housesource());
+					
+					for(int j=0;j<hsvo.size();j++){
+						if(hsvo.get(j).getPk_housesource().equals(recvo.getPk_house())){
+							recvo.setPk_building(hsvo.get(j).getBuildname());
+						}
 					}
+					
+					recvo.setPk_costproject(fyqs[i].getPk_costproject());
+					recvo.setVsrcid(hvo.getPk_throwalease());
+					recvo.setVsrctype(hvo.getPk_billtype());
+					recvo.setPk_billtype(getStgObj(pk_billtype));
+					recvo.setBilltypecode("H620");
+					recvo.setVbillstatus(1);
+					recvo.setBegindate(hvo.getDtzdate());
+					//recvo.setEnddate(CalendarUtls.getBeforeFirstDay(eenddate));
+					recvo.setGatherdate(hvo.getDtzdate());
+					recvo.setCaccountperiod(pk_tz);
+					recvo.setNrecmoney(new UFDouble(0-js));
+					recvo.setNtaxrate(fyqs[i].getNtaxrate());
+					recvo.setNnotaxmoney(new UFDouble(0).sub(fyqs[i].getNnotaxmoney()));
+					recvo.setNtaxmoney(new UFDouble(0).sub(fyqs[i].getNtaxmny()));
+					recvo.setVdef1(fyqs[i].getPk_throwaleasefyqs());
+					recvo.setVdef2("zl_throwalease_fyqs");
+					//rlist.add(recvo);
+					AggRecbillVO aggrevo=new AggRecbillVO();
+					aggrevo.setParentVO(recvo);
+					aggrlist.add(aggrevo);
 				}
-				
-				recvo.setPk_costproject(fyqs[i].getPk_costproject());
-				recvo.setVsrcid(hvo.getPk_throwalease());
-				recvo.setVsrctype(hvo.getPk_billtype());
-				recvo.setPk_billtype(getStgObj(pk_billtype));
-				recvo.setBilltypecode("H620");
-				recvo.setVbillstatus(1);
-				recvo.setBegindate(hvo.getDtzdate());
-				//recvo.setEnddate(CalendarUtls.getBeforeFirstDay(eenddate));
-				recvo.setGatherdate(hvo.getDtzdate());
-				recvo.setCaccountperiod(pk_tz);
-				recvo.setNrecmoney(new UFDouble(0-js));
-				recvo.setNtaxrate(fyqs[i].getNtaxrate());
-				recvo.setNnotaxmoney(new UFDouble(0).sub(fyqs[i].getNnotaxmoney()));
-				recvo.setNtaxmoney(new UFDouble(0).sub(fyqs[i].getNtaxmny()));
-				recvo.setVdef1(fyqs[i].getPk_throwaleasefyqs());
-				recvo.setVdef2("zl_throwalease_fyqs");
-				//rlist.add(recvo);
-				AggRecbillVO aggrevo=new AggRecbillVO();
-				aggrevo.setParentVO(recvo);
-				aggrlist.add(aggrevo);
 				
 				//传待收入确认
-				ConfirmationVO vo=new ConfirmationVO();
-				vo.setPk_customer(fyqs[0].getPk_customer());
-				vo.setPk_org(hvo.getPk_org());
-				vo.setPk_group(hvo.getPk_group());
-				vo.setPk_org_v(hvo.getPk_org_v());
-				vo.setDbilldate(new UFDate());
-				vo.setCreator(AppContext.getInstance().getPkUser());
-				vo.setCreationtime(AppContext.getInstance().getServerTime());
-				vo.setApprover(AppContext.getInstance().getPkUser());
-				vo.setApprovetime(AppContext.getInstance().getServerTime());
-				vo.setPk_project(hvo.getPk_project());
-				vo.setVbillstatus(1);
-				vo.setVbilltypecode("H640");
-				String sql1 = "select pk_billtypeid from bd_billtype where pk_billtypecode='H640'";
-				Object pk_billtype1 = dao.executeQuery(sql1, new ColumnProcessor());
-				vo.setPk_billtype(getStgObj(pk_billtype1));
-				vo.setVsrcid(hvo.getPk_throwalease());
-				vo.setVsrctype(hvo.getPk_billtype());
-				vo.setCaccountperiod(pk_tz);
-				vo.setHouseproperty(fyqs[i].getPk_housesource());
-				for(int j=0;j<hsvo.size();j++){
-					if(hsvo.get(j).getPk_housesource().equals(recvo.getPk_house())){
-						vo.setBuildno(hsvo.get(j).getBuildname());
+				Double recqr=Double.parseDouble(fyqs[i].getRecqr().toString());
+				if(recqr!=0){
+					ConfirmationVO vo=new ConfirmationVO();
+					vo.setPk_customer(fyqs[0].getPk_customer());
+					vo.setPk_org(hvo.getPk_org());
+					vo.setPk_group(hvo.getPk_group());
+					vo.setPk_org_v(hvo.getPk_org_v());
+					vo.setDbilldate(new UFDate());
+					vo.setCreator(AppContext.getInstance().getPkUser());
+					vo.setCreationtime(AppContext.getInstance().getServerTime());
+					vo.setApprover(AppContext.getInstance().getPkUser());
+					vo.setApprovetime(AppContext.getInstance().getServerTime());
+					vo.setPk_project(hvo.getPk_project());
+					vo.setVbillstatus(1);
+					vo.setVbilltypecode("H640");
+					String sql1 = "select pk_billtypeid from bd_billtype where pk_billtypecode='H640'";
+					Object pk_billtype1 = dao.executeQuery(sql1, new ColumnProcessor());
+					vo.setPk_billtype(getStgObj(pk_billtype1));
+					vo.setVsrcid(hvo.getPk_throwalease());
+					vo.setVsrctype(hvo.getPk_billtype());
+					vo.setCaccountperiod(pk_tz);
+					vo.setHouseproperty(fyqs[i].getPk_housesource());
+					for(int j=0;j<hsvo.size();j++){
+						if(hsvo.get(j).getPk_housesource().equals(vo.getHouseproperty())){
+							vo.setBuildno(hsvo.get(j).getBuildname());
+						}
 					}
+					vo.setChargingproject(fyqs[i].getPk_costproject());
+					vo.setDfeestartdate(hvo.getDtzdate());
+					vo.setDcollectiondate(hvo.getDtzdate());
+					vo.setDreccollectdate(hvo.getDtzdate());
+					if(fyqs[i].getRecqr()==null){
+						vo.setAmountreceivable(new UFDouble(0));
+						vo.setNnotaxmny(new UFDouble(0));
+					}else{
+						vo.setAmountreceivable(new UFDouble(0).sub(fyqs[i].getRecqr()));
+						vo.setNnotaxmny(new UFDouble(0).sub(fyqs[i].getRecqr().div(fyqs[i].getNtaxrate().add(100)).multiply(100)));
+					}
+					vo.setAmountconfirmed(new UFDouble(0));
+					vo.setNtaxrate(fyqs[i].getNtaxrate());
+					vo.setNtaxmny(vo.getAmountreceivable().sub(vo.getNnotaxmny()));
+					vo.setVdef1(fyqs[i].getPk_throwaleasefyqs());
+					vo.setVdef2("zl_throwalease_fyqs");
+					AggConfirmationVO aggcvo=new AggConfirmationVO();
+					aggcvo.setParentVO(vo);
+					aggclist.add(aggcvo);
 				}
-				vo.setChargingproject(fyqs[i].getPk_costproject());
-				vo.setDfeestartdate(hvo.getDtzdate());
-				vo.setDcollectiondate(hvo.getDtzdate());
-				vo.setDreccollectdate(hvo.getDtzdate());
-				if(fyqs[i].getRecqr()==null){
-					vo.setAmountreceivable(new UFDouble(0));
-					vo.setNnotaxmny(new UFDouble(0));
-				}else{
-					vo.setAmountreceivable(new UFDouble(0).sub(fyqs[i].getRecqr()));
-					vo.setNnotaxmny(new UFDouble(0).sub(fyqs[i].getRecqr().div(fyqs[i].getNtaxrate().add(100)).multiply(100)));
-				}
-				vo.setAmountconfirmed(new UFDouble(0));
-				vo.setNtaxrate(fyqs[i].getNtaxrate());
-				vo.setNtaxmny(vo.getAmountreceivable().sub(vo.getNnotaxmny()));
-				vo.setVdef1(fyqs[i].getPk_throwaleasefyqs());
-				vo.setVdef2("zl_throwalease_fyqs");
-				AggConfirmationVO aggcvo=new AggConfirmationVO();
-				aggcvo.setParentVO(vo);
-				aggclist.add(aggcvo);
 				
 			}
 			if(aggrlist.size()>0){
 				cwf.insert(aggrlist.toArray(new AggRecbillVO[aggrlist.size()]), null);
+			}
+			if(aggclist.size()>0){
 				lyw.insert(aggclist.toArray(new AggConfirmationVO[aggclist.size()]), null);
 			}
 			
@@ -408,105 +403,108 @@ public class Hql_throwaleaseMaintainImpl extends AceHql_throwaleasePubServiceImp
 				
 				for(int i=0;i<zqfyvo.length;i++){
 					Double yt=Double.parseDouble(zqfyvo[i].getNskmny().toString());
-					if(yt==0){
-						continue;
-					}
-					RecbillVO recvo=new RecbillVO();
-					recvo.setPk_org(hvo.getPk_org());
-					recvo.setPk_org_v(hvo.getPk_org_v());
-					recvo.setPk_group(hvo.getPk_group());
-					recvo.setPk_project(hvo.getPk_project());
-					recvo.setDbilldate(new UFDate());
-					recvo.setCreator(AppContext.getInstance().getPkUser());
-					recvo.setCreationtime(AppContext.getInstance().getServerTime());
-					recvo.setApprover(AppContext.getInstance().getPkUser());
-					recvo.setApprovetime(AppContext.getInstance().getServerTime());
-					//recvo.setVbillcode(getVbillCode(i, hvo.getPk_billtype()));
-					recvo.setPk_customer(zqfyvo[i].getPk_customer());
-					recvo.setPk_house(zqfyvo[i].getPk_housesource());
-					
-					for(int j=0;j<hsvo.size();j++){
-						if(hsvo.get(j).getPk_housesource().equals(recvo.getPk_house())){
-							recvo.setPk_building(hsvo.get(j).getBuildname());
+					if(yt!=0){
+						RecbillVO recvo=new RecbillVO();
+						recvo.setPk_org(hvo.getPk_org());
+						recvo.setPk_org_v(hvo.getPk_org_v());
+						recvo.setPk_group(hvo.getPk_group());
+						recvo.setPk_project(hvo.getPk_project());
+						recvo.setDbilldate(new UFDate());
+						recvo.setCreator(AppContext.getInstance().getPkUser());
+						recvo.setCreationtime(AppContext.getInstance().getServerTime());
+						recvo.setApprover(AppContext.getInstance().getPkUser());
+						recvo.setApprovetime(AppContext.getInstance().getServerTime());
+						//recvo.setVbillcode(getVbillCode(i, hvo.getPk_billtype()));
+						recvo.setPk_customer(zqfyvo[i].getPk_customer());
+						recvo.setPk_house(zqfyvo[i].getPk_housesource());
+						
+						for(int j=0;j<hsvo.size();j++){
+							if(hsvo.get(j).getPk_housesource().equals(recvo.getPk_house())){
+								recvo.setPk_building(hsvo.get(j).getBuildname());
+							}
 						}
+						
+						recvo.setPk_costproject(zqfyvo[i].getPk_costproject());
+						recvo.setVsrcid(hvo.getPk_throwalease());
+						recvo.setVsrctype(hvo.getPk_billtype());
+						recvo.setPk_billtype(getStgObj(pk_billtype));
+						recvo.setBilltypecode("H620");
+						recvo.setVbillstatus(1);
+						recvo.setBegindate(hvo.getDtzdate());
+						recvo.setGatherdate(hvo.getDtzdate());
+						//recvo.setEnddate(CalendarUtls.getBeforeFirstDay(eenddate));
+						recvo.setCaccountperiod(pk_tz);
+						recvo.setNrecmoney(new UFDouble(0-yt));
+						recvo.setNtaxrate(zqfyvo[i].getNtaxrate());
+						recvo.setNnotaxmoney(new UFDouble(0).sub(zqfyvo[i].getNnotaxmoney()));
+						recvo.setNtaxmoney(new UFDouble(0).sub(zqfyvo[i].getNtaxmny()));
+						recvo.setVdef1(zqfyvo[i].getPk_throwalease_zqfyqs());
+						recvo.setVdef2("zl_throwalease_zqfyqs");
+						//rlist.add(recvo);
+						AggRecbillVO aggrevo=new AggRecbillVO();
+						aggrevo.setParentVO(recvo);
+						aggrlist2.add(aggrevo);
 					}
-					
-					recvo.setPk_costproject(zqfyvo[i].getPk_costproject());
-					recvo.setVsrcid(hvo.getPk_throwalease());
-					recvo.setVsrctype(hvo.getPk_billtype());
-					recvo.setPk_billtype(getStgObj(pk_billtype));
-					recvo.setBilltypecode("H620");
-					recvo.setVbillstatus(1);
-					recvo.setBegindate(hvo.getDtzdate());
-					recvo.setGatherdate(hvo.getDtzdate());
-					//recvo.setEnddate(CalendarUtls.getBeforeFirstDay(eenddate));
-					recvo.setCaccountperiod(pk_tz);
-					recvo.setNrecmoney(new UFDouble(0-yt));
-					recvo.setNtaxrate(zqfyvo[i].getNtaxrate());
-					recvo.setNnotaxmoney(new UFDouble(0).sub(zqfyvo[i].getNnotaxmoney()));
-					recvo.setNtaxmoney(new UFDouble(0).sub(zqfyvo[i].getNtaxmny()));
-					recvo.setVdef1(zqfyvo[i].getPk_throwalease_zqfyqs());
-					recvo.setVdef2("zl_throwalease_zqfyqs");
-					//rlist.add(recvo);
-					AggRecbillVO aggrevo=new AggRecbillVO();
-					aggrevo.setParentVO(recvo);
-					aggrlist2.add(aggrevo);
 					
 					//传待收入确认
-					ConfirmationVO vo=new ConfirmationVO();
-					vo.setPk_customer(zqfyvo[0].getPk_customer());
-					vo.setPk_org(hvo.getPk_org());
-					vo.setPk_group(hvo.getPk_group());
-					vo.setPk_org_v(hvo.getPk_org_v());
-					vo.setDbilldate(new UFDate());
-					vo.setCreator(AppContext.getInstance().getPkUser());
-					vo.setCreationtime(AppContext.getInstance().getServerTime());
-					vo.setApprover(AppContext.getInstance().getPkUser());
-					vo.setApprovetime(AppContext.getInstance().getServerTime());
-					vo.setPk_project(hvo.getPk_project());
-					vo.setVbillstatus(1);
-					vo.setVbilltypecode("H640");
-					String sql1 = "select pk_billtypeid from bd_billtype where pk_billtypecode='H640'";
-					Object pk_billtype1 = dao.executeQuery(sql1, new ColumnProcessor());
-					vo.setPk_billtype(getStgObj(pk_billtype1));
-					vo.setVsrcid(hvo.getPk_throwalease());
-					vo.setVsrctype(hvo.getPk_billtype());
-					vo.setCaccountperiod(pk_tz);
-					vo.setHouseproperty(zqfyvo[i].getPk_housesource());
-					for(int j=0;j<hsvo.size();j++){
-						if(hsvo.get(j).getPk_housesource().equals(recvo.getPk_house())){
-							vo.setBuildno(hsvo.get(j).getBuildname());
+					Double recqr=Double.parseDouble(zqfyvo[i].getRecqr().toString());
+					if(recqr!=0){
+						ConfirmationVO vo=new ConfirmationVO();
+						vo.setPk_customer(zqfyvo[0].getPk_customer());
+						vo.setPk_org(hvo.getPk_org());
+						vo.setPk_group(hvo.getPk_group());
+						vo.setPk_org_v(hvo.getPk_org_v());
+						vo.setDbilldate(new UFDate());
+						vo.setCreator(AppContext.getInstance().getPkUser());
+						vo.setCreationtime(AppContext.getInstance().getServerTime());
+						vo.setApprover(AppContext.getInstance().getPkUser());
+						vo.setApprovetime(AppContext.getInstance().getServerTime());
+						vo.setPk_project(hvo.getPk_project());
+						vo.setVbillstatus(1);
+						vo.setVbilltypecode("H640");
+						String sql1 = "select pk_billtypeid from bd_billtype where pk_billtypecode='H640'";
+						Object pk_billtype1 = dao.executeQuery(sql1, new ColumnProcessor());
+						vo.setPk_billtype(getStgObj(pk_billtype1));
+						vo.setVsrcid(hvo.getPk_throwalease());
+						vo.setVsrctype(hvo.getPk_billtype());
+						vo.setCaccountperiod(pk_tz);
+						vo.setHouseproperty(zqfyvo[i].getPk_housesource());
+						for(int j=0;j<hsvo.size();j++){
+							if(hsvo.get(j).getPk_housesource().equals(vo.getHouseproperty())){
+								vo.setBuildno(hsvo.get(j).getBuildname());
+							}
 						}
+						vo.setChargingproject(zqfyvo[i].getPk_costproject());
+						vo.setDfeestartdate(hvo.getDtzdate());
+						vo.setDcollectiondate(hvo.getDtzdate());
+						if(zqfyvo[i].getRecqr()==null){
+							vo.setAmountreceivable(new UFDouble(0));
+							vo.setNnotaxmny(new UFDouble(0));
+						}else{
+							vo.setAmountreceivable(new UFDouble(0).sub(zqfyvo[i].getRecqr()));
+							vo.setNnotaxmny(new UFDouble(0).sub(zqfyvo[i].getRecqr().div(zqfyvo[i].getNtaxrate().add(100)).multiply(100)));
+						}
+						vo.setAmountconfirmed(new UFDouble(0));
+						vo.setNtaxrate(zqfyvo[i].getNtaxrate());
+						vo.setNtaxmny(vo.getAmountreceivable().sub(vo.getNnotaxmny()));
+						vo.setVdef1(zqfyvo[i].getPk_throwalease_zqfyqs());
+						vo.setVdef2("zl_throwalease_zqfyqs");
+						vo.setDreccollectdate(hvo.getDtzdate());
+						AggConfirmationVO aggcvo=new AggConfirmationVO();
+						aggcvo.setParentVO(vo);
+						aggclist2.add(aggcvo);
 					}
-					vo.setChargingproject(zqfyvo[i].getPk_costproject());
-					vo.setDfeestartdate(hvo.getDtzdate());
-					vo.setDcollectiondate(hvo.getDtzdate());
-					if(zqfyvo[i].getRecqr()==null){
-						vo.setAmountreceivable(new UFDouble(0));
-						vo.setNnotaxmny(new UFDouble(0));
-					}else{
-						vo.setAmountreceivable(new UFDouble(0).sub(zqfyvo[i].getRecqr()));
-						vo.setNnotaxmny(new UFDouble(0).sub(zqfyvo[i].getRecqr().div(zqfyvo[i].getNtaxrate().add(100)).multiply(100)));
-					}
-					vo.setAmountconfirmed(new UFDouble(0));
-					vo.setNtaxrate(zqfyvo[i].getNtaxrate());
-					vo.setNtaxmny(vo.getAmountreceivable().sub(vo.getNnotaxmny()));
-					vo.setVdef1(zqfyvo[i].getPk_throwalease_zqfyqs());
-					vo.setVdef2("zl_throwalease_zqfyqs");
-					vo.setDreccollectdate(hvo.getDtzdate());
-					AggConfirmationVO aggcvo=new AggConfirmationVO();
-					aggcvo.setParentVO(vo);
-					aggclist2.add(aggcvo);
-					
 				}
 				if(aggrlist2.size()>0){
 					cwf.insert(aggrlist2.toArray(new AggRecbillVO[aggrlist2.size()]), null);
+				}
+				if(aggclist2.size()>0){
 					lyw.insert(aggclist2.toArray(new AggConfirmationVO[aggclist2.size()]), null);
 				}
 				
 			}
 			
-			String sql_house2="select * from zl_contract_house where nvl(dr,0)=0 and pk_contract='"+hvo.getVsrcid()+"'";
+			String sql_house2="select * from zl_contract_house where nvl(dr,0)=0 and vdef5='N' and pk_contract='"+hvo.getVsrcid()+"'";
 			List<ContractHouseVO> housevo=(List<ContractHouseVO>) dao.executeQuery(sql_house2, new BeanListProcessor(ContractHouseVO.class));
 			if(housevo.size()==0||housevo==null){
 				//回写合同状态变成退租
@@ -515,18 +513,11 @@ public class Hql_throwaleaseMaintainImpl extends AceHql_throwaleasePubServiceImp
 				dao.executeUpdate(sql_contract);
 				
 				//保证金应收收款作废
-				String sql_rec="update zl_recbill set dr=2 where nvl(dr,0)=0 and vsrcid='"+hvo.getVsrcid()+"' and vdef2='zl_contract_bzj'";
+				/*String sql_rec="update zl_recbill set dr=2 where nvl(dr,0)=0 and vsrcid='"+hvo.getVsrcid()+"' and vdef2='zl_contract_bzj'";
 				dao.executeUpdate(sql_rec);
 				String sql_gar="update zl_gather_b set dr=2 where nvl(dr,0)=0 and firstpk='"+hvo.getVsrcid()+"' and vdef2='zl_contract_bzj'";
-				dao.executeUpdate(sql_gar);
+				dao.executeUpdate(sql_gar);*/
 				
-			}else{
-				//整理行号
-				for(int i=0;i<housevo.size();i++){
-					ContractHouseVO chvo=housevo.get(i);
-					chvo.setRowno((i+1)*10+"");
-				}
-				dao.updateVOArray(housevo.toArray(new ContractHouseVO[housevo.size()]));
 			}
 			
 			String sql_ywcf="select * from zl_contract_ywcf where nvl(dr,0)=0 and pk_contract='"+hvo.getVsrcid()+"'";
@@ -625,17 +616,17 @@ public class Hql_throwaleaseMaintainImpl extends AceHql_throwaleasePubServiceImp
 		dao.deleteByClause(ConfirmationVO.class, " vsrcid='"+getStgObj(obj)+"'");
 		
 		//回写应收、待收入确认、合同、房源
-		String sql_house2="select * from zl_contract_house where nvl(dr,0)=0 and pk_contract='"+bills[0].getParentVO().getVsrcid()+"'";
+		String sql_house2="select * from zl_contract_house where nvl(dr,0)=0 and vdef5='N' and pk_contract='"+bills[0].getParentVO().getVsrcid()+"'";
 		List<ContractHouseVO> housevo=(List<ContractHouseVO>) dao.executeQuery(sql_house2, new BeanListProcessor(ContractHouseVO.class));
 		if(housevo.size()==0||housevo==null){
 			String sql_contract = "update zl_contract set htstatus = 3,doutdate = null" +
 					" where nvl(dr,0)=0 and version = -1 and pk_contract = '"+bills[0].getParentVO().getVsrcid()+"'";
 			dao.executeUpdate(sql_contract);
 			
-			String sql_rec="update zl_recbill set dr=0 where nvl(dr,0)=2 and vsrcid='"+bills[0].getParentVO().getVsrcid()+"' and vdef2='zl_contract_bzj'";
+			/*String sql_rec="update zl_recbill set dr=0 where nvl(dr,0)=2 and vsrcid='"+bills[0].getParentVO().getVsrcid()+"' and vdef2='zl_contract_bzj'";
 			dao.executeUpdate(sql_rec);
 			String sql_gar="update zl_gather_b set dr=0 where nvl(dr,0)=2 and firstpk='"+bills[0].getParentVO().getVsrcid()+"' and vdef2='zl_contract_bzj'";
-			dao.executeUpdate(sql_gar);
+			dao.executeUpdate(sql_gar);*/
 		}
 		
 		String sql3="update zl_recbill set dr=0 where nvl(dr,0)=2 and begindate>='"+bills[0].getParentVO().getDtzdate()+"' " +
@@ -649,7 +640,7 @@ public class Hql_throwaleaseMaintainImpl extends AceHql_throwaleasePubServiceImp
 						"not in (select b.vsrcid from zl_billconfirmedb b where nvl(b.dr,0)=0)";
 		dao.executeUpdate(sql_bill);
 		
-		String fcsql="update zl_contract_house set dr=0 where nvl(dr,0)=2 and pk_house in ("+pks+") and pk_contract='"+bills[0].getParentVO().getVsrcid()+"'";
+		String fcsql="update zl_contract_house set vdef5='N' where nvl(dr,0)=0 and pk_house in ("+pks+") and pk_contract='"+bills[0].getParentVO().getVsrcid()+"'";
 		dao.executeUpdate(fcsql);
 		
 		String ywcf="update zl_contract_ywcf set dr=0 where nvl(dr,0)=2 and pk_house in ("+pks+") and pk_contract='"+bills[0].getParentVO().getVsrcid()+"'";

@@ -1,6 +1,7 @@
 package nc.ui.zl.ld_report_cwdy.ace.actions;
 
 
+import nc.desktop.ui.WorkbenchEnvironment;
 import nc.pubitf.setting.defaultdata.OrgSettingAccessor;
 import nc.ui.pubapp.uif2app.query2.IQueryConditionDLGInitializer;
 import nc.ui.pubapp.uif2app.query2.QueryConditionDLGDelegator;
@@ -15,6 +16,7 @@ import nc.ui.zl.abs.power.FilterProjectByOrg;
 import nc.ui.zl.abs.power.MusFilterCostpByOrg;
 import nc.ui.zl.abs.power.MusFilterProjectByOrg;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
+import nc.vo.uap.rbac.profile.FunctionPermProfileManager;
 
 @SuppressWarnings("restriction")
 public class BillQueryConditionDLGInitializer implements
@@ -34,7 +36,11 @@ public class BillQueryConditionDLGInitializer implements
 	@Override
 	public void initQueryConditionDLG(QueryConditionDLGDelegator dlgDelegator) {
 		
-		dlgDelegator.registerNeedPermissionOrgFieldCode("pk_org");//注册主组织过滤
+		String[]pks=FunctionPermProfileManager
+		        .getInstance()
+		        .getProfile(
+		            WorkbenchEnvironment.getInstance().getLoginUser().getUser_code()).getFuncSubInfo("ZLH420").getFuncPermissionPkorgs();
+				dlgDelegator.registerNeedPermissionOrgFieldCode("report_cwdy.pk_org",pks);//注册主组织过滤
 		
 		this.setDefaultPk_org(dlgDelegator);
 		

@@ -1,14 +1,18 @@
 package nc.ui.zl.ly_report.ace.view;
 
+import nc.desktop.ui.WorkbenchEnvironment;
 import nc.pubitf.setting.defaultdata.OrgSettingAccessor;
 import nc.ui.pubapp.uif2app.query2.IQueryConditionDLGInitializer;
 import nc.ui.pubapp.uif2app.query2.QueryConditionDLGDelegator;
+import nc.ui.pubapp.uif2app.query2.refedit.FieldValueElementEditorFactory;
 import nc.ui.uif2.model.BillManageModel;
 import nc.ui.zl.abs.power.MusFilterCostpByOrg;
 import nc.ui.zl.abs.power.MusFilterCustomerByProject;
 import nc.ui.zl.abs.power.MusFilterHouseByCustomer;
 import nc.ui.zl.abs.power.MusFilterProjectByOrg;
+import nc.vo.pub.BusinessException;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
+import nc.vo.uap.rbac.profile.FunctionPermProfileManager;
 
 public class BillQueryConditionDLGInitializer2 implements
 		IQueryConditionDLGInitializer {
@@ -24,10 +28,16 @@ public class BillQueryConditionDLGInitializer2 implements
 		this.model = model;
 	}
 
+	
+	
 	@Override
 	public void initQueryConditionDLG(QueryConditionDLGDelegator dlgDelegator) {
+		String[]pks=FunctionPermProfileManager
+        .getInstance()
+        .getProfile(
+            WorkbenchEnvironment.getInstance().getLoginUser().getUser_code()).getFuncSubInfo("ZLH420").getFuncPermissionPkorgs();
+		dlgDelegator.registerNeedPermissionOrgFieldCode("zl_zbzj.pk_org",pks);//注册主组织过滤
 		
-		dlgDelegator.registerNeedPermissionOrgFieldCode("pk_org");//注册主组织过滤
 		dlgDelegator.getDealEnumTypeRef();
 		this.setDefaultPk_org(dlgDelegator);
 		

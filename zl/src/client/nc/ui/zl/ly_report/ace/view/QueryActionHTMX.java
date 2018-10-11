@@ -71,13 +71,14 @@ public class QueryActionHTMX extends DefaultQueryAction{
 		where=where.replaceAll("htmx.", "m.");
 		
 		String sql_someByHouse="select * from (select x.pk_org,x.pk_project,x.htcode,x.pk_customer,x.house pk_house,x.recdate,x.pk_costproject,x.recmny," +
-				"x.realmny,x.recmny - x.realmny qfmny from (select r.pk_org,r.pk_project," +
-				"(select c.htcode from zl_contract c where c.pk_contract = r.vsrcid) htcode,r.pk_customer,r.pk_building," +
+				"x.realmny,x.recmny - x.realmny qfmny from (select r.pk_org,r.pk_project,(case when r.vsrctype='0001ZZ1000000001SNDJ' then " +
+				"(select c.htcode from zl_contract c where c.pk_contract = r.vsrcid) else " +
+				"(select t.contractid from zl_throwalease t where t.pk_throwalease=r.vsrcid) end) htcode,r.pk_customer,r.pk_building," +
 				"wm_concat((select b.name||'-'||h.roomnumber from zl_buildingfile b left join zl_housesource h on " +
 				"b.pk_buildingfile=h.buildname where nvl(b.dr,0)=0 and nvl(h.dr,0)=0 and h.pk_housesource=r.pk_house)) house,r.gatherdate recdate," +
 				"r.pk_costproject,sum(r.nrecmoney) recmny,(case when sum(r.nrealmoney) is null then 0 else sum(r.nrealmoney) end) realmny " +
-				"from zl_recbill r where nvl(r.dr, 0) = 0 and r.vbillstatus = 1 and r.vsrctype = '0001ZZ1000000001SNDJ' group by r.pk_org," +
-				"r.pk_project,r.pk_customer,r.pk_costproject,r.pk_building,r.gatherdate,r.vsrcid) x order by " +
+				"from zl_recbill r where nvl(r.dr, 0) = 0 and r.vbillstatus = 1 and r.vsrctype in ('0001ZZ1000000001SNDJ','0001ZZ1000000001UKA6') " +
+				"group by r.pk_org,r.pk_project,r.pk_customer,r.pk_costproject,r.pk_building,r.gatherdate,r.vsrcid,r.vsrctype) x order by " +
 				"x.pk_org,x.pk_project,x.htcode,x.pk_customer,x.pk_building asc,x.pk_costproject,x.recdate asc) m where "+where;
 				
 		IUAPQueryBS iQ=NCLocator.getInstance().lookup(IUAPQueryBS.class);

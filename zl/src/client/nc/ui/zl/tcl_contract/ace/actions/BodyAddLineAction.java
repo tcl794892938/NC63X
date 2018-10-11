@@ -61,12 +61,12 @@ public class BodyAddLineAction extends
 			billform.getBillCardPanel().getBillModel(tabcode).setValueAt(obj, row, "pk_customer");
 			billform.getBillCardPanel().getBillModel(tabcode).setValueAt(objdate, row, "dstartdate");
 			
-			Object obj2=billform.getBillCardPanel().getHeadItem("taxstyle").getValueObject();
-			Integer it=0;
-			if(obj2!=null){
-				it=Integer.valueOf(obj2.toString());
-			}
-			billform.getBillCardPanel().getBillModel(tabcode).setValueAt(it, row, "ntaxrate");
+//			Object obj2=billform.getBillCardPanel().getHeadItem("taxstyle").getValueObject();
+//			Integer it=0;
+//			if(obj2!=null){
+//				it=Integer.valueOf(obj2.toString());
+//			}
+			billform.getBillCardPanel().getBillModel(tabcode).setValueAt(6, row, "ntaxrate");
 			
 			billform.getBillCardPanel().getBillModel(tabcode).loadLoadRelationItemValue();
 		}

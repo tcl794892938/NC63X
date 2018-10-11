@@ -17,6 +17,7 @@ import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.querytemplate.querytree.FromWhereSQLImpl;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.ui.zl.abs.enums.AbsEnumType;
+import nc.ui.zl.tcl_contract.ace.config.CalendarUtls;
 import nc.vo.logging.Debug;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFDate;
@@ -198,6 +199,13 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 		// 合同管理审核通过时保留0号版本
 		ContractVO cvo = bills[0].getParentVO();
 		if (cvo.getVbillstatus() == 1 && cvo.getVbilltypecode().equals("H420")) {
+			
+			Object vdef1=cvo.getVdef1();
+			if(vdef1!=null){
+				String sql_u="update zl_contract set htstatus=4 where pk_contract='"+vdef1+"'";
+				BaseDAO dao = new BaseDAO();
+				dao.executeUpdate(sql_u);
+			}
 
 			List<Customer_fcxxVO> flist = new ArrayList<Customer_fcxxVO>();
 			AggContractVO newvo = (AggContractVO) bills[0].clone();
@@ -515,6 +523,13 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 			if (cvo.getVbillstatus() == 1
 					&& cvo.getVbilltypecode().equals("H420")) {
 
+				//检验是否有续租的合同
+				String sql = "select count(*) from zl_contract where nvl(dr,0)=0 and vdef1='"+cvo.getPk_contract()+"'";
+				Integer count = (Integer) dao.executeQuery(sql, new ColumnProcessor());
+				if(count>0){
+					throw new BusinessException("该合同已经续约，不能取消审核！");
+				}
+				
 				// 校验是否有下游
 				String sqlxy = "select count(1) from zl_contract t where pk_contract ='"
 						+ cvo.getPk_contract()
@@ -554,6 +569,12 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 					throw new BusinessException("单据已经被进场管理参照，不能取消审核！");
 				}
 
+				Object vdef1=cvo.getVdef1();
+				if(vdef1!=null){
+					String sql_u="update zl_contract set htstatus=2 where pk_contract='"+vdef1+"'";
+					dao.executeUpdate(sql_u);
+				}
+				
 				String pk = cvo.getPk_contract();
 				dao.deleteByClause(ContractCustVO.class,
 						" pk_contract in(select pk_contract from zl_contract where "
@@ -645,8 +666,7 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 		obj2.setWhere((where == null ? " 1=1" : where)
 				+ " and vbillstatus=1 and htstatus in(1,2,3) and version='-1' and vbilltypecode='H420' "
 				+ " and not exists(select 1 from zl_contract tt where zl_contract.pk_contract=tt.vsrcid and "
-				+ " nvl(tt.dr,0)=0 and tt.vbillstatus<>1 and tt.vbilltypecode='H430') "
-				+ " and not exists(select 1 from zl_entryacceptance tt where zl_contract.pk_contract=tt.vsrcid and nvl(tt.dr,0)=0 )");
+				+ " nvl(tt.dr,0)=0 and tt.vbillstatus<>1 and tt.vbilltypecode='H430') ");
 
 		return super.pubquerybills(queryScheme);
 	}
@@ -750,6 +770,97 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 
 		return aggvo;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<AggContractVO> queryHTbyPK2(List<String> pks) throws BusinessException {
+		//根据主键查合同
+		BaseDAO dao = new BaseDAO();
+		List<AggContractVO> aggvos=new ArrayList<AggContractVO>();
+		for(int i=0;i<pks.size();i++){
+			String pk=pks.get(i);
+			AggContractVO aggvo = new AggContractVO();
+			String sql = "select * from zl_contract t where pk_contract='"+pk+"'";
+			ContractVO vo = (ContractVO) dao.executeQuery(sql, new BeanProcessor(
+					ContractVO.class));
+			aggvo.setParentVO(vo);
+			// 查询客户页签
+			String sql1 = "select * from zl_contract_cust where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractCustVO> list1 = (List<ContractCustVO>) dao.executeQuery(
+					sql1, new BeanListProcessor(ContractCustVO.class));
+			aggvo.setChildren(ContractCustVO.class,
+					list1.toArray(new ContractCustVO[0]));
+			// 查询房产页签
+			String sql2 = "select * from zl_contract_house where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractHouseVO> list2 = (List<ContractHouseVO>) dao.executeQuery(
+					sql2, new BeanListProcessor(ContractHouseVO.class));
+			aggvo.setChildren(ContractHouseVO.class,
+					list2.toArray(new ContractHouseVO[0]));
+			// 查询免周期页签
+			String sql3 = "select * from zl_contract_mzq where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractMzqVO> list3 = (List<ContractMzqVO>) dao.executeQuery(
+					sql3, new BeanListProcessor(ContractMzqVO.class));
+			aggvo.setChildren(ContractMzqVO.class,
+					list3.toArray(new ContractMzqVO[0]));
+			// 查询增长期页签
+			String sql4 = "select * from zl_contract_zzq where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractZzqVO> list4 = (List<ContractZzqVO>) dao.executeQuery(
+					sql4, new BeanListProcessor(ContractZzqVO.class));
+			aggvo.setChildren(ContractZzqVO.class,
+					list4.toArray(new ContractZzqVO[0]));
+			// 查询保证金页签
+			String sql5 = "select * from zl_contract_bzj where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractBzjVO> list5 = (List<ContractBzjVO>) dao.executeQuery(
+					sql5, new BeanListProcessor(ContractBzjVO.class));
+			aggvo.setChildren(ContractBzjVO.class,
+					list5.toArray(new ContractBzjVO[0]));
+			// 查询业务页签
+			String sql6 = "select * from zl_contract_ywcf where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractYwcfVO> list6 = (List<ContractYwcfVO>) dao.executeQuery(
+					sql6, new BeanListProcessor(ContractYwcfVO.class));
+			aggvo.setChildren(ContractYwcfVO.class,
+					list6.toArray(new ContractYwcfVO[0]));
+			// 查询财务页签
+			String sql7 = "select * from zl_contract_cwcf where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractCwcfVO> list7 = (List<ContractCwcfVO>) dao.executeQuery(
+					sql7, new BeanListProcessor(ContractCwcfVO.class));
+			aggvo.setChildren(ContractCwcfVO.class,
+					list7.toArray(new ContractCwcfVO[0]));
+			// 查询周期页签
+			String sql8 = "select * from zl_contract_zqfy where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractZqfyVO> list8 = (List<ContractZqfyVO>) dao.executeQuery(
+					sql8, new BeanListProcessor(ContractZqfyVO.class));
+			aggvo.setChildren(ContractZqfyVO.class,
+					list8.toArray(new ContractZqfyVO[0]));
+			// 查询周期拆分页签
+			String sql9 = "select * from zl_contract_zqfycf where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractZqfycfVO> list9 = (List<ContractZqfycfVO>) dao
+					.executeQuery(sql9, new BeanListProcessor(
+							ContractZqfycfVO.class));
+			aggvo.setChildren(ContractZqfycfVO.class,
+					list9.toArray(new ContractZqfycfVO[0]));
+			// 查询付款明细页签
+			String sql10 = "select * from zl_contract_fkmx where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractFkmxVO> list10 = (List<ContractFkmxVO>) dao.executeQuery(
+					sql10, new BeanListProcessor(ContractFkmxVO.class));
+			aggvo.setChildren(ContractFkmxVO.class,
+					list10.toArray(new ContractFkmxVO[0]));
+			// 查询租金明细页签
+			String sql11 = "select * from zl_contract_zjmx where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractZjmxVO> list11 = (List<ContractZjmxVO>) dao.executeQuery(
+					sql11, new BeanListProcessor(ContractZjmxVO.class));
+			aggvo.setChildren(ContractZjmxVO.class,
+					list11.toArray(new ContractZjmxVO[0]));
+			// 查询周期明细页签
+			String sql12 = "select * from zl_contract_zqmx where nvl(dr,0)=0 and pk_contract='"+pk+"'";
+			List<ContractZqmxVO> list12 = (List<ContractZqmxVO>) dao.executeQuery(
+					sql12, new BeanListProcessor(ContractZqmxVO.class));
+			aggvo.setChildren(ContractZqmxVO.class,
+					list12.toArray(new ContractZqmxVO[0]));
+			aggvos.add(aggvo);
+		}
+		return aggvos;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -819,10 +930,12 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 				+ " and nvl(zl_contract.dr,0)=0 and "
 				+ t1
 				+ " and zl_contract.vbillstatus = 1 and "
-				+ "zl_contract.htstatus = 3 and zl_contract.pk_contract not in (select a.vsrcid from zl_throwalease a where nvl(a.dr,0)=0 "
-				+ "and a.pk_throwalease in (select k.pk_throwalease from zl_throwalease_khfc k where nvl(k.dr,0)=0) and a.vbillstatus=-1) "
-				+ "and zl_contract.version = -1 order by zl_contract.pk_contract";
-		String sql_body = "select * from zl_contract_house where nvl(dr,0)=0";
+				+ "zl_contract.htstatus = 3 and zl_contract.version = -1 and exists (select 1 from zl_contract_house h where nvl(h.dr,0)=0 and h.pk_contract_house not in " +
+				"(select t.pk_fc from zl_throwalease_khfc t where nvl(t.dr,0)=0 and exists (select 1 from zl_throwalease tt where nvl(tt.dr,0)=0 " +
+				"and tt.pk_throwalease=t.pk_throwalease)) and h.pk_contract=zl_contract.pk_contract) order by zl_contract.pk_contract";
+		String sql_body = "select * from zl_contract_house h where nvl(h.dr,0)=0 and h.pk_contract_house not in " +
+				"(select t.pk_fc from zl_throwalease_khfc t where nvl(t.dr,0)=0 and exists (select 1 from zl_throwalease tt where nvl(tt.dr,0)=0 " +
+				"and tt.pk_throwalease=t.pk_throwalease))";
 		BaseDAO dao = new BaseDAO();
 		List<ContractVO> headList = (List<ContractVO>) dao.executeQuery(
 				sql_head, new BeanListProcessor(ContractVO.class));
@@ -1026,9 +1139,11 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 			}
 		}
 
-		ICwf_recbillMaintain irm = NCLocator.getInstance().lookup(
-				ICwf_recbillMaintain.class);
-		irm.insert(aggrvos.toArray(new AggRecbillVO[aggrvos.size()]), null);
+		if(aggrvos.size()>0){
+			ICwf_recbillMaintain irm = NCLocator.getInstance().lookup(
+					ICwf_recbillMaintain.class);
+			irm.insert(aggrvos.toArray(new AggRecbillVO[aggrvos.size()]), null);
+		}
 
 	}
 
@@ -1045,6 +1160,7 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 		Map<Object, UFDouble> zqmap = new HashMap<Object, UFDouble>();
 		for (ContractZqfyVO zq : zqvos) {
 			zqmap.put(zq.getPk_house(), zq.getNtaxrate());
+			zqmap.put(zq.getPk_house()+zq.getPk_costproject(), zq.getNsfmny());
 		}
 		// 财务拆分部分推待收入确认
 		if (ctcwvos != null && ctcwvos.length > 0) {
@@ -1081,6 +1197,8 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 				cnvo.setDbilldate(new UFDate());
 				cnvo.setCreator(AppContext.getInstance().getPkUser());
 				cnvo.setCreationtime(AppContext.getInstance().getServerTime());
+				cnvo.setApprover(AppContext.getInstance().getPkUser());
+				cnvo.setApprovetime(AppContext.getInstance().getServerTime());
 				cnvo.setVsrcid(ctvo.getPk_contract());
 				cnvo.setVsrctype(ctvo.getPk_billtype());
 				cnvo.setPk_billtype(pk_billtype_1);
@@ -1107,57 +1225,192 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 		}
 		// 周期费用拆分部分推待收入确认
 		ContractZqfycfVO[] zqfycfs = aggctvo.getChildZqfycfVO();
-		if (zqfycfs != null && zqfycfs.length > 0) {
-			for (int i = 0; i < zqfycfs.length; i++) {
-				// 应收金额=0不推
-				if (zqfycfs[i].getNysmny().compareTo(new UFDouble(0)) == 0) {
-					continue;
-				}
-				ConfirmationVO cnvo = new ConfirmationVO();
-				AggConfirmationVO aggcnvo = new AggConfirmationVO();
-				cnvo.setPk_org(ctvo.getPk_org());
-				cnvo.setPk_org_v(ctvo.getPk_org_v());
-				cnvo.setPk_group(ctvo.getPk_group());
-				cnvo.setPk_customer(zqfycfs[i].getPk_customer());
-				cnvo.setCaccountperiod(zqfycfs[i].getPk_month());
-				cnvo.setDcollectiondate(zqfycfs[i].getDrecdate());
-				// 获取楼栋信息
-				String pk_building = null;
-				UFDouble nrentarea = null;
-				for (int j = 0; j < chvos.length; j++) {
-					if (chvos[j].getPk_house().equals(zqfycfs[i].getPk_house())) {
-						pk_building = chvos[j].getPk_building();
-						nrentarea = chvos[j].getNarea();
-						break;
+		String sql_value="select value from pub_sysinit where dr=0 and initcode='ZL002' and pk_org='"+ctvo.getPk_org()+"'";
+		Object value=dao.executeQuery(sql_value, new ColumnProcessor());
+		if(value.toString().equals("N")){
+			if (zqfycfs != null && zqfycfs.length > 0) {
+				for (int i = 0; i < zqfycfs.length; i++) {
+					// 应收金额=0不推
+					if (zqfycfs[i].getNysmny().compareTo(new UFDouble(0)) == 0) {
+						continue;
 					}
+					ConfirmationVO cnvo = new ConfirmationVO();
+					AggConfirmationVO aggcnvo = new AggConfirmationVO();
+					cnvo.setPk_org(ctvo.getPk_org());
+					cnvo.setPk_org_v(ctvo.getPk_org_v());
+					cnvo.setPk_group(ctvo.getPk_group());
+					cnvo.setPk_customer(zqfycfs[i].getPk_customer());
+					cnvo.setCaccountperiod(zqfycfs[i].getPk_month());
+					cnvo.setDcollectiondate(zqfycfs[i].getDrecdate());
+					// 获取楼栋信息
+					String pk_building = null;
+					UFDouble nrentarea = null;
+					for (int j = 0; j < chvos.length; j++) {
+						if (chvos[j].getPk_house().equals(zqfycfs[i].getPk_house())) {
+							pk_building = chvos[j].getPk_building();
+							nrentarea = chvos[j].getNarea();
+							break;
+						}
+					}
+					cnvo.setHouseproperty(zqfycfs[i].getPk_house());
+					cnvo.setBuildno(pk_building);
+					cnvo.setDbilldate(new UFDate());
+					cnvo.setCreator(AppContext.getInstance().getPkUser());
+					cnvo.setCreationtime(AppContext.getInstance().getServerTime());
+					cnvo.setApprover(AppContext.getInstance().getPkUser());
+					cnvo.setApprovetime(AppContext.getInstance().getServerTime());
+					cnvo.setVsrcid(ctvo.getPk_contract());
+					cnvo.setVsrctype(ctvo.getPk_billtype());
+					cnvo.setPk_billtype(pk_billtype_1);
+					cnvo.setVbilltypecode("H640");
+					cnvo.setVbillstatus(1);
+					cnvo.setPk_project(ctvo.getPk_project());
+					cnvo.setDr(0);
+					cnvo.setChargingproject(zqfycfs[i].getPk_costproject());
+					cnvo.setDfeestartdate(zqfycfs[i].getDstartdate());
+					cnvo.setDfeeenddate(zqfycfs[i].getDenddate());
+					cnvo.setAmountreceivable(zqfycfs[i].getNysmny());
+					cnvo.setAmountconfirmed(new UFDouble(0));
+					cnvo.setDreccollectdate(zqfycfs[i].getDrecdate());
+					cnvo.setVdef1(zqfycfs[i].getPk_contract_zqfycf());
+					cnvo.setVdef2("zl_contract_zqfycf");
+					// 报表用
+					cnvo.setNrentarea(nrentarea);
+					cnvo.setNnotaxmny(zqfycfs[i].getNnotaxmny());
+					cnvo.setNtaxmny(zqfycfs[i].getNtaxmny());
+					cnvo.setNtaxrate(zqmap.get(zqfycfs[i].getPk_house()));
+					aggcnvo.setParentVO(cnvo);
+					aggcnvos.add(aggcnvo);
 				}
-				cnvo.setHouseproperty(zqfycfs[i].getPk_house());
-				cnvo.setBuildno(pk_building);
-				cnvo.setDbilldate(new UFDate());
-				cnvo.setCreator(AppContext.getInstance().getPkUser());
-				cnvo.setCreationtime(AppContext.getInstance().getServerTime());
-				cnvo.setVsrcid(ctvo.getPk_contract());
-				cnvo.setVsrctype(ctvo.getPk_billtype());
-				cnvo.setPk_billtype(pk_billtype_1);
-				cnvo.setVbilltypecode("H640");
-				cnvo.setVbillstatus(1);
-				cnvo.setPk_project(ctvo.getPk_project());
-				cnvo.setDr(0);
-				cnvo.setChargingproject(zqfycfs[i].getPk_costproject());
-				cnvo.setDfeestartdate(zqfycfs[i].getDstartdate());
-				cnvo.setDfeeenddate(zqfycfs[i].getDenddate());
-				cnvo.setAmountreceivable(zqfycfs[i].getNysmny());
-				cnvo.setAmountconfirmed(new UFDouble(0));
-				cnvo.setDreccollectdate(zqfycfs[i].getDrecdate());
-				cnvo.setVdef1(zqfycfs[i].getPk_contract_zqfycf());
-				cnvo.setVdef2("zl_contract_zqfycf");
-				// 报表用
-				cnvo.setNrentarea(nrentarea);
-				cnvo.setNnotaxmny(zqfycfs[i].getNnotaxmny());
-				cnvo.setNtaxmny(zqfycfs[i].getNtaxmny());
-				cnvo.setNtaxrate(zqmap.get(zqfycfs[i].getPk_house()));
-				aggcnvo.setParentVO(cnvo);
-				aggcnvos.add(aggcnvo);
+			}
+		}else if(value.toString().equals("Y")){
+			Integer ndignum=Integer.parseInt(ctvo.getNdegree().toString());
+			if (zqfycfs != null && zqfycfs.length > 0) {
+				for (int i = 0; i < zqfycfs.length; i++) {
+					// 应收金额=0不推
+					if (zqfycfs[i].getNysmny().compareTo(new UFDouble(0)) == 0) {
+						continue;
+					}
+					UFDouble daymny=getUFdobj(zqmap.get(zqfycfs[i].getPk_house()+zqfycfs[i].getPk_costproject())).div(30);
+					UFDate ud_fist=new UFDate(zqfycfs[i].getDstartdate().toString());
+					UFDate ud_last=new UFDate(zqfycfs[i].getDenddate().toString());
+					UFDate monthstart=ud_fist;
+					UFDate monthend=CalendarUtls.getMaxMonthDay(ud_fist);
+					UFDouble fymny=new UFDouble();
+					UFDouble allmny=new UFDouble();
+					while(monthend.beforeDate(ud_last)){
+						int oneMT=CalendarUtls.getBetweenTwoDays(monthstart, monthend);
+						if(ndignum==AbsEnumType.FeeScale2_JW){
+							fymny=new UFDouble(Math.ceil(daymny.multiply(oneMT).doubleValue()));
+						}else{
+							fymny=daymny.multiply(oneMT).add(new UFDouble(0), ndignum);
+						}
+						ConfirmationVO cnvo = new ConfirmationVO();
+						AggConfirmationVO aggcnvo = new AggConfirmationVO();
+						cnvo.setPk_org(ctvo.getPk_org());
+						cnvo.setPk_org_v(ctvo.getPk_org_v());
+						cnvo.setPk_group(ctvo.getPk_group());
+						cnvo.setPk_customer(zqfycfs[i].getPk_customer());
+						String sql_pk = "select pk_accperiodmonth from bd_accperiodmonth where " +
+								"nvl(dr,0)=0 and (begindate <= '"+monthstart+"' and enddate >= '"+monthstart+"')";
+						Object pk=dao.executeQuery(sql_pk, new ColumnProcessor());
+						cnvo.setCaccountperiod(pk.toString());
+						cnvo.setDcollectiondate(monthstart);
+						// 获取楼栋信息
+						String pk_building = null;
+						UFDouble nrentarea = null;
+						for (int j = 0; j < chvos.length; j++) {
+							if (chvos[j].getPk_house().equals(zqfycfs[i].getPk_house())) {
+								pk_building = chvos[j].getPk_building();
+								nrentarea = chvos[j].getNarea();
+								break;
+							}
+						}
+						cnvo.setHouseproperty(zqfycfs[i].getPk_house());
+						cnvo.setBuildno(pk_building);
+						cnvo.setDbilldate(new UFDate());
+						cnvo.setCreator(AppContext.getInstance().getPkUser());
+						cnvo.setCreationtime(AppContext.getInstance().getServerTime());
+						cnvo.setApprover(AppContext.getInstance().getPkUser());
+						cnvo.setApprovetime(AppContext.getInstance().getServerTime());
+						cnvo.setVsrcid(ctvo.getPk_contract());
+						cnvo.setVsrctype(ctvo.getPk_billtype());
+						cnvo.setPk_billtype(pk_billtype_1);
+						cnvo.setVbilltypecode("H640");
+						cnvo.setVbillstatus(1);
+						cnvo.setPk_project(ctvo.getPk_project());
+						cnvo.setDr(0);
+						cnvo.setChargingproject(zqfycfs[i].getPk_costproject());
+						cnvo.setDfeestartdate(monthstart);
+						cnvo.setDfeeenddate(monthend);
+						cnvo.setAmountreceivable(fymny);
+						cnvo.setAmountconfirmed(new UFDouble(0));
+						cnvo.setDreccollectdate(monthstart);
+						cnvo.setVdef1(zqfycfs[i].getPk_contract_zqfycf());
+						cnvo.setVdef2("zl_contract_zqfycf");
+						// 报表用
+						cnvo.setNrentarea(nrentarea);
+						cnvo.setNtaxrate(zqmap.get(zqfycfs[i].getPk_house()));
+						cnvo.setNnotaxmny(fymny.div(cnvo.getNtaxrate().div(100).add(1)));
+						cnvo.setNtaxmny(fymny.sub(cnvo.getNnotaxmny()));
+						aggcnvo.setParentVO(cnvo);
+						aggcnvos.add(aggcnvo);
+						monthstart=CalendarUtls.getNextMonthFirstDay(monthstart);
+						monthend=CalendarUtls.getMaxMonthDay(monthstart);
+						allmny=fymny.add(allmny);
+					}
+					//最后一笔倒减
+					ConfirmationVO cnvo = new ConfirmationVO();
+					AggConfirmationVO aggcnvo = new AggConfirmationVO();
+					cnvo.setPk_org(ctvo.getPk_org());
+					cnvo.setPk_org_v(ctvo.getPk_org_v());
+					cnvo.setPk_group(ctvo.getPk_group());
+					cnvo.setPk_customer(zqfycfs[i].getPk_customer());
+					String sql_pk1 = "select pk_accperiodmonth from bd_accperiodmonth where " +
+							"nvl(dr,0)=0 and (begindate <= '"+monthstart+"' and enddate >= '"+monthstart+"')";
+					Object pk1=dao.executeQuery(sql_pk1, new ColumnProcessor());
+					cnvo.setCaccountperiod(pk1.toString());
+					cnvo.setDcollectiondate(monthstart);
+					// 获取楼栋信息
+					String pk_building = null;
+					UFDouble nrentarea = null;
+					for (int j = 0; j < chvos.length; j++) {
+						if (chvos[j].getPk_house().equals(zqfycfs[i].getPk_house())) {
+							pk_building = chvos[j].getPk_building();
+							nrentarea = chvos[j].getNarea();
+							break;
+						}
+					}
+					cnvo.setHouseproperty(zqfycfs[i].getPk_house());
+					cnvo.setBuildno(pk_building);
+					cnvo.setDbilldate(new UFDate());
+					cnvo.setCreator(AppContext.getInstance().getPkUser());
+					cnvo.setCreationtime(AppContext.getInstance().getServerTime());
+					cnvo.setApprover(AppContext.getInstance().getPkUser());
+					cnvo.setApprovetime(AppContext.getInstance().getServerTime());
+					cnvo.setVsrcid(ctvo.getPk_contract());
+					cnvo.setVsrctype(ctvo.getPk_billtype());
+					cnvo.setPk_billtype(pk_billtype_1);
+					cnvo.setVbilltypecode("H640");
+					cnvo.setVbillstatus(1);
+					cnvo.setPk_project(ctvo.getPk_project());
+					cnvo.setDr(0);
+					cnvo.setChargingproject(zqfycfs[i].getPk_costproject());
+					cnvo.setDfeestartdate(monthstart);
+					cnvo.setDfeeenddate(ud_last);
+					cnvo.setAmountreceivable(zqfycfs[i].getNysmny().sub(allmny));
+					cnvo.setAmountconfirmed(new UFDouble(0));
+					cnvo.setDreccollectdate(monthstart);
+					cnvo.setVdef1(zqfycfs[i].getPk_contract_zqfycf());
+					cnvo.setVdef2("zl_contract_zqfycf");
+					// 报表用
+					cnvo.setNrentarea(nrentarea);
+					cnvo.setNtaxrate(zqmap.get(zqfycfs[i].getPk_house()));
+					cnvo.setNnotaxmny(cnvo.getAmountreceivable().div(cnvo.getNtaxrate().div(100).add(1)));
+					cnvo.setNtaxmny(cnvo.getAmountreceivable().sub(cnvo.getNnotaxmny()));
+					aggcnvo.setParentVO(cnvo);
+					aggcnvos.add(aggcnvo);
+				}
 			}
 		}
 
@@ -1193,6 +1446,8 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 				cnvo.setDbilldate(new UFDate());
 				cnvo.setCreator(AppContext.getInstance().getPkUser());
 				cnvo.setCreationtime(AppContext.getInstance().getServerTime());
+				cnvo.setApprover(AppContext.getInstance().getPkUser());
+				cnvo.setApprovetime(AppContext.getInstance().getServerTime());
 				cnvo.setVsrcid(ctvo.getPk_contract());
 				cnvo.setVsrctype(ctvo.getPk_billtype());
 				cnvo.setPk_billtype(pk_billtype_1);
@@ -1216,11 +1471,17 @@ public class Tcl_contractMaintainImpl extends AceTcl_contractPubServiceImpl
 				aggcnvos.add(aggcnvo);
 			}
 		}
-		// 调待确认收入单的实现类的insert方法写入数据库
-		ILyw_confirmationMaintain icf = NCLocator.getInstance().lookup(
-				ILyw_confirmationMaintain.class);
-		icf.insert(aggcnvos.toArray(new AggConfirmationVO[aggcnvos.size()]),
-				null);
+		if(aggcnvos.size()>0){
+			// 调待确认收入单的实现类的insert方法写入数据库
+			ILyw_confirmationMaintain icf = NCLocator.getInstance().lookup(
+					ILyw_confirmationMaintain.class);
+			icf.insert(aggcnvos.toArray(new AggConfirmationVO[aggcnvos.size()]),
+					null);
+		}
+	}
+	
+	private static UFDouble getUFdobj(Object obj){
+		return obj==null?new UFDouble(0):new UFDouble(obj.toString());
 	}
 	// public boolean findCnByVsrcid(String vsrcid) throws DAOException{
 	// boolean flag=false;

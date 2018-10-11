@@ -134,15 +134,16 @@ public class QueryAction extends nc.ui.pubapp.uif2app.query2.action.DefaultQuery
 			String where2 = where1.replaceAll(jieguo1, jieguo);
 			String where = where2.replaceAll("report_cwdy.", "m.");
 
-			String sql = "select m.orgname,m.projectname,m.pk_costproject,m.pk_account,sum(m.realmoney) nrealmoney from " +
+			String sql = "select m.orgname,m.projectname,m.pk_costproject,m.pk_account,sum(m.realmoney) nrealmoney," +
+					"sum(m.notaxmny) notaxmny,sum(m.taxmny) taxmny,m.rate from " +
 					"(select g.pk_org,og.name orgname,g.pk_project,p.name projectname,gb.pk_costproject,ba.yearmth pk_account," +
-					"sum(gb.nskmny) realmoney from zl_gather_b gb "
+					"sum(gb.nskmny) realmoney,sum(gb.nsknotaxmny) notaxmny,sum(gb.nsktaxmny) taxmny,gb.ntaxrate rate from zl_gather_b gb "
 						+"join zl_gather g on (gb.pk_gather=g.pk_gather and nvl(gb.dr,0)=0 and nvl(g.dr,0)=0 and g.vbillstatus=1) "
 						+"left join zl_project p on g.pk_project = p.pk_project "
 						+"left join org_orgs og on g.pk_org = og.pk_org "
 						+"left join bd_accperiodmonth ba on (g.dbilldate>=ba.begindate and g.dbilldate<=ba.enddate) "
-						+"group by g.pk_org,og.name,g.pk_project,p.name,gb.pk_costproject,gb.caccountperiod,ba.yearmth) m where "+where+" group by " +
-								"m.orgname,m.projectname,m.pk_account,m.pk_costproject order by m.orgname,m.projectname,m.pk_account,m.pk_costproject";
+						+"group by gb.ntaxrate, g.pk_org,og.name,g.pk_project,p.name,gb.pk_costproject,gb.caccountperiod,ba.yearmth) m where "+where+" group by " +
+						"m.rate,m.orgname,m.projectname,m.pk_account,m.pk_costproject order by m.orgname,m.projectname,m.pk_account,m.pk_costproject";
 		
 			List<Map<String, Object>> listmap=null;
 			
@@ -184,7 +185,11 @@ public class QueryAction extends nc.ui.pubapp.uif2app.query2.action.DefaultQuery
 				int count1 = 0;
 				int count2 = 0;
 				UFDouble nreal = new UFDouble(0);
+				UFDouble notax = new UFDouble(0);
+				UFDouble tax = new UFDouble(0);
 				UFDouble nAllreal = new UFDouble(0);
+				UFDouble nAllreal2 = new UFDouble(0);
+				UFDouble nAllreal3 = new UFDouble(0);
 				for(Map<String, Object> map : listmap){
 					
 					hmodel.addLine();
@@ -204,10 +209,14 @@ public class QueryAction extends nc.ui.pubapp.uif2app.query2.action.DefaultQuery
 					if((t.equals(getStrObj(up_value)))&&!t.equals("")){
 						count1++;
 						nreal = nreal.add(getUfdObj(map.get("nrealmoney")));
+						notax = notax.add(getUfdObj(map.get("notaxmny")));
+						tax = tax.add(getUfdObj(map.get("taxmny")));
 						
 					}else if(getStrObj(up_value).equals("")&&!t.equals("")){
 						count1=1;
 						nreal = nreal.add(getUfdObj(map.get("nrealmoney")));
+						notax = notax.add(getUfdObj(map.get("notaxmny")));
+						tax = tax.add(getUfdObj(map.get("taxmny")));
 						up_value = t;
 					}
 					
@@ -218,14 +227,20 @@ public class QueryAction extends nc.ui.pubapp.uif2app.query2.action.DefaultQuery
 								hmodel.setValueAt("会计期间小计", hmodel.getRowCount()-1, key);
 							}else if(key.equals("nrealmoney")){
 								hmodel.setValueAt(nreal, hmodel.getRowCount()-1, key);
+							}else if(key.equals("notaxmny")){
+								hmodel.setValueAt(notax, hmodel.getRowCount()-1, key);
+							}else if(key.equals("taxmny")){
+								hmodel.setValueAt(tax, hmodel.getRowCount()-1, key);
 							}
 							
 						}
 						//添加背景色
-						for(int i=4;i<8;i++){
+						for(int i=4;i<11;i++){
 							hmodel.setBackground(new Color(255, 238, 188), hmodel.getRowCount()-1, i);
 						}
 						nreal = new UFDouble(0);
+						notax = new UFDouble(0);
+						tax = new UFDouble(0);
 						count1=0;
 						up_value="";
 						
@@ -237,6 +252,8 @@ public class QueryAction extends nc.ui.pubapp.uif2app.query2.action.DefaultQuery
 					}*/
 					//总计
 					nAllreal = nAllreal.add(getUfdObj(map.get("nrealmoney")));
+					nAllreal2 = nAllreal2.add(getUfdObj(map.get("notaxmny")));
+					nAllreal3 = nAllreal3.add(getUfdObj(map.get("taxmny")));
 					
 					if(listmap.size()==count2){
 						billForm.getBillCardPanel().setTatolRowShow(true);
@@ -250,9 +267,15 @@ public class QueryAction extends nc.ui.pubapp.uif2app.query2.action.DefaultQuery
 							}else if(key.equals("nrealmoney")){
 								
 								hmodel.setValueAt(getUfdObj(nAllreal), hmodel.getRowCount()-1, key);
+							}else if(key.equals("notaxmny")){
+								
+								hmodel.setValueAt(getUfdObj(nAllreal2), hmodel.getRowCount()-1, key);
+							}else if(key.equals("taxmny")){
+								
+								hmodel.setValueAt(getUfdObj(nAllreal3), hmodel.getRowCount()-1, key);
 							}
 						}
-						for(int i=1;i<8;i++){
+						for(int i=1;i<11;i++){
 							hmodel.setBackground(new Color(255, 255, 188), hmodel.getRowCount()-1, i);
 						}
 						billForm.getBillCardPanel().setTatolRowShow(false);

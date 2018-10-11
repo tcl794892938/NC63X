@@ -84,14 +84,14 @@ public class QueryAction extends DefaultQueryAction{
 			System.out.println(where.substring(where.indexOf("AND houseitems.getday")+4,where.indexOf("AND houseitems.getday")+46));
 			jie = where.substring(where.indexOf("AND houseitems.getday")+4,where.indexOf("AND houseitems.getday")+46);
 			jie1 = jie;
-			jie = jie.replaceAll("houseitems.getday", "gatherdate");
+			jie = jie.replaceAll("houseitems.getday", "r.gatherdate");
 			where = where.replaceAll("AND "+jie1, "");
 		}else if(where.indexOf("(houseitems.getday")!=-1){//2个应收日期
 			System.out.println(where.substring(where.indexOf("(houseitems.getday"),where.indexOf("and houseitems.getday")+47));
 			jie = where.substring(where.indexOf("(houseitems.getday"),where.indexOf("and houseitems.getday")+47);
 			jie1 = " \\" +jie.substring(0, jie.length()-1)+"\\" +jie.substring(jie.length()-1,jie.length());
 			
-			jie = jie.replaceAll("houseitems.getday", "gatherdate");
+			jie = jie.replaceAll("houseitems.getday", "r.gatherdate");
 			where = where.replaceAll("AND"+jie1, "");
 		}
 		if(!jie.equals("")){
@@ -102,20 +102,24 @@ public class QueryAction extends DefaultQueryAction{
 		String where3 = where2.replaceAll("pk_org","pk_orgpk");
 		String where1 = where3.replaceAll("pk_project","prject_pk");
 		
-		String sql="select * from (select x.pk_orgpk,x.pk_org,x.prject_pk,x.pk_project,x.pk_buildno,x.pk_house,x.pk_housesource,x.rentarea,x.certificatearea," +
-				"x.housestate,x.pk_customer,sum(x.nreccollecttotal) nreccollecttotal,sum(x.ncollecttotal) ncollecttotal," +
-				"sum(x.nreccollecttotal)-sum(x.ncollecttotal) narrearagetotal from " +
-				"(select a.pk_orgpk,a.pk_org,a.prject_pk,a.pk_project,a.pk_buildno,a.floorn,a.unit,a.roomnumber,a.pk_house,a.pk_housesource," +
-				"a.rentarea,a.certificatearea,a.housestate,s.pk_customer,(case when s.ys is null then 0 else s.ys end) nreccollecttotal," +
-				"(case when s.ss is null then 0 else s.ss end) ncollecttotal from " +
-				"(select o.pk_org pk_orgpk,o.name pk_org,p.pk_project prject_pk,p.name pk_project,h.buildname pk_buildno,h.floorn,h.unit," +
-				"h.roomnumber,h.pk_housesource pk_house,h.pk_housesource,h.buildarea rentarea,h.innerarea certificatearea,h.housestate " +
-				"from org_orgs o left join zl_project p on o.pk_org=p.pk_org left join zl_housesource h on p.pk_project=h.projectname " +
-				"where nvl(o.dr,0)=0 and nvl(p.dr,0)=0 and nvl(h.dr,0)=0 and h.pk_housesource is not null) a left join " +
-				"(select r.pk_customer,r.pk_house,r.nrecmoney ys,r.nrealmoney ss,r.gatherdate from zl_recbill r " +
-				"where nvl(r.dr,0)=0 and r.vbillstatus=1 and "+jie3+") s on a.pk_housesource=s.pk_house) x" +
-				" group by  x.pk_orgpk,x.pk_org,x.prject_pk,x.pk_project,x.pk_buildno,x.floorn,x.unit,x.roomnumber,x.pk_house,x.pk_housesource,x.rentarea,x.certificatearea," +
-				"x.housestate,x.pk_customer order by x.pk_orgpk,x.prject_pk,x.pk_buildno,floorn desc,unit asc,roomnumber asc) m where "+where1;
+		String sql="select * from (select x.pk_orgpk,x.pk_org,x.prject_pk,x.pk_project,x.pk_buildno,x.pk_house,x.pk_housesource,x.rentarea," +
+				"x.certificatearea,x.housestate,x.pk_customer,sum(x.nreccollecttotal) nreccollecttotal,sum(x.ncollecttotal) ncollecttotal," +
+				"sum(x.nreccollecttotal) - sum(x.ncollecttotal) narrearagetotal from (select a.pk_orgpk,a.pk_org,a.prject_pk,a.pk_project," +
+				"a.pk_buildno,a.floorn,a.unit,a.roomnumber,a.pk_house,a.pk_housesource,a.rentarea,a.certificatearea,a.housestate,a.pk_customer," +
+				"(case when s.ys is null then 0 else s.ys end) nreccollecttotal,(case when s.ss is null then 0 else s.ss end) ncollecttotal " +
+				"from (select o.pk_org pk_orgpk,o.name pk_org,p.pk_project prject_pk,p.name pk_project,h.buildname pk_buildno,h.floorn,h.unit," +
+				"h.roomnumber,h.pk_housesource pk_house,h.pk_housesource,h.buildarea rentarea,h.innerarea certificatearea,h.housestate,aa.pk_customer " +
+				"from org_orgs o left join zl_project p on o.pk_org = p.pk_org left join zl_housesource h on p.pk_project = h.projectname " +
+				"left join (select c1.pk_customer, c1.pk_house from zl_contract_house c1 where nvl(c1.dr, 0) = 0 and c1.vdef5!='Y' and exists " +
+				"(select 1 from zl_contract c1c where nvl(c1c.dr, 0) = 0 and c1c.pk_contract = c1.pk_contract and c1c.version = -1 and c1c.htstatus<>4) " +
+				"union all select c2.pk_customer, c2b.parknum from zl_parkcontract c2 left join zl_parkcontract_b c2b on c2b.pk_parkcontract = " +
+				"c2.pk_parkcontract where nvl(c2.dr, 0) = 0 and nvl(c2b.dr, 0) = 0 and c2.version = -1 " +
+				"union all select c3.khname, c3.fcname from zl_zylist c3 where nvl(c3.dr, 0) = 0) aa on aa.pk_house = h.pk_housesource " +
+				"where nvl(o.dr, 0) = 0 and nvl(p.dr, 0) = 0 and nvl(h.dr, 0) = 0 and h.pk_housesource is not null) a left join " +
+				"(select r.pk_house,r.nrecmoney ys,r.nrealmoney ss,r.gatherdate from zl_recbill r where nvl(r.dr, 0) = 0 and r.vbillstatus = 1 " +
+				"and "+jie3+") s on a.pk_housesource = s.pk_house) x group by x.pk_orgpk,x.pk_org,x.prject_pk,x.pk_project,x.pk_buildno,x.floorn," +
+				"x.unit,x.roomnumber,x.pk_house,x.pk_housesource,x.rentarea,x.certificatearea,x.housestate,x.pk_customer order by x.pk_orgpk," +
+				"x.prject_pk,x.pk_buildno,floorn desc,unit asc,roomnumber asc) m where "+where1;
 		
 		/*String sql="select * from(select  og.name pk_org,h.pk_org pk_orgpk,h.projectname prject_pk,zp.name pk_project,h.buildname pk_buildno,h.pk_housesource pk_house,h.pk_housesource,h.floorn,h.unit,h.roomnumber,h.buildarea rentarea,h.innerarea certificatearea,b1.pk_customer,h.housestate,"
                 +"nvl(b1.nreccollecttotal,0) nreccollecttotal,nvl(b2.ncollecttotal,0) ncollecttotal,nvl(b2.nrefundtotal,0) nrefundtotal," 

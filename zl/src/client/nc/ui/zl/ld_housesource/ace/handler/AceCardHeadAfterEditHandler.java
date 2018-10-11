@@ -53,7 +53,7 @@ public class AceCardHeadAfterEditHandler implements IAppEventHandler<CardHeadTai
 			Object objld=billForm.getBillCardPanel().getHeadItem("buildname").getValueObject();
 			//校验单元是否存在
 			IUAPQueryBS iQ = NCLocator.getInstance().lookup(IUAPQueryBS.class);
-			String sql="select count(1) from zl_housesource where buildname ='"+objld+"' and unit='"+e.getValue()+"' and pk_housesource<>'"+objpk+"'";
+			String sql="select count(1) from zl_housesource where buildname ='"+objld+"' and unit='"+e.getValue()+"' and pk_housesource<>'"+objpk+"' and dr=0";
 			Integer it=0;
 			try {
 				it=(Integer)iQ.executeQuery(sql, new ColumnProcessor());
@@ -81,7 +81,8 @@ public class AceCardHeadAfterEditHandler implements IAppEventHandler<CardHeadTai
 			
 			//校验是否重复
 			IUAPQueryBS iQ = NCLocator.getInstance().lookup(IUAPQueryBS.class);
-			String sql="select count(1) from zl_housesource where buildname ='"+objld+"' and unit='"+objunit+"' and "+e.getKey()+"='"+e.getValue()+"' and pk_housesource<>'"+objpk+"'";
+			String sql="select count(1) from zl_housesource where buildname ='"+objld+"' and unit='"+objunit+"' and "+e.getKey()+"='"+e.getValue()+"' and pk_housesource<>'"+objpk+"'" +
+					" and dr=0";
 			Integer it=0;
 			try {
 				it=(Integer)iQ.executeQuery(sql, new ColumnProcessor());

@@ -36,7 +36,7 @@ public class SaveAction extends nc.ui.pubapp.uif2app.actions.pflow.SaveScriptAct
 			String sql="select count(*) from zl_gather where nvl(dr,0)=0 and pk_customer='"+obj+"' and vbillstatus<>1";
 			IUAPQueryBS iQ=NCLocator.getInstance().lookup(IUAPQueryBS.class);
 			int a=(Integer) iQ.executeQuery(sql, new ColumnProcessor());
-			if(a>0){
+			if(a>0&&!new UFBoolean(getStgObj(panel.getHeadItem("isadd").getValueObject())).booleanValue()){
 				throw new Exception("该客户存在未审核的收款单，不可保存！");
 			}
 		}
